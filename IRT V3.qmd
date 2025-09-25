@@ -1,0 +1,364 @@
+---
+title: "IRT"
+author: "firdaus"
+format: html
+theme: united
+editor: visual
+---
+
+# Prepare Environment
+
+## Load Libraries
+
+```{r}
+library(psych)        # For basic psychometrics and scale reliability analysis
+library(foreign)      # For reading and writing data in foreign statistical formats
+library(ltm)          # To fit 2PL IRT models and other latent trait models
+library(irtoys)       # For IRT utilities
+library(mirt)         # Modern IRT package for multi-item response theory
+library(latticeExtra) # For enhanced plotting in lattice-based plots
+library(tidyverse)    # For data manipulation, cleaning, and visualization
+library(haven)        # For importing and exporting SPSS, Stata, and SAS files
+library(writexl)      # For exporting data frames to Excel files
+library(readxl)       # For reading data from Excel files
+```
+
+## Load Data
+
+```{r}
+data1=read_xlsx("IRT_knowledge.xlsx") ##read data from Excel 
+names(data1) # List down variables in the data set
+dim(data1)  # Data set consists of 37 variables and 177 parents
+```
+
+### Recode Data
+
+```{r}
+# Define reverse-coded items
+reverse_items <- c("K2", "K3", "K4", "K5", "K8", "K10", "K35")
+
+# Recode
+data2 <- data1 %>%
+  mutate(across(
+    -all_of(reverse_items), 
+    ~ case_when(
+      tolower(.) == "ya" ~ 1,
+      tolower(.) == "tidak" ~ 0,
+      tolower(.) == "tidak pasti" ~ 2,
+      TRUE ~ NA_real_
+    )
+  )) %>%
+  mutate(across(
+    all_of(reverse_items),
+     ~ case_when(
+      tolower(.) == "ya" ~ 0,
+      tolower(.) == "tidak" ~ 1,
+      tolower(.) == "tidak pasti" ~ 2,
+      TRUE ~ NA_real_
+    )
+  ))
+```
+
+```{r}
+#Recode 1 = 1 (correct answer), 2 and 0 = 0 (incorrect answer)
+
+data3 <- data2 %>%
+  mutate(across(
+    everything(),
+    ~ case_when(
+      . == 1 ~ 1,
+      . %in% c(0, 2) ~ 0,
+      TRUE ~ NA_real_
+    )
+  ))
+```
+
+# Descriptive Statistics
+
+## Response Frequencies
+
+```{r}
+response.frequencies(data3)
+```
+
+### Descriptive Statistics
+
+```{r}
+descript(data3)
+```
+
+# Fitting 2PL IRT Model with `ltm` Package
+
+## Fit 2PL Model (ltm)
+
+```{r}
+irt.data3 <- ltm(data3 ~ z1, IRT.param = TRUE)
+```
+
+## Item Parameter Estimates
+
+```{r}
+# Obtain difficulty and discrimination parameter estimates
+item_parms <- coef(irt.data3)
+```
+
+```{r}
+# Tidy view: Item | a (Discrimination) | b (Difficulty)
+
+item_parms_tbl <- item_parms |>
+  as.data.frame() |>
+  transform(Item = rownames(item_parms),
+            Difficulty = Dffclt,
+            Discrimination = Dscrmn) |>
+  (\(d) d[, c("Item", "Difficulty", "Discrimination")])() |>
+  (\(d) within(d, { 
+    Difficulty <- round(Difficulty, 3)
+    Discrimination <- round(Discrimination, 3)
+  }))()
+
+item_parms_tbl
+```
+
+## Model Summary
+
+```{r}
+# Includes log-likelihood, AIC/BIC, SEs, and Wald z-values
+summary(irt.data3)
+```
+
+## Items Removal Plan
+
+**Selection criteria a \> 0.35 ; -3 \< b \> +3**
+
+K3 - a = 0.3056
+
+K5 - b = -19.3079
+
+K7 - a = 0.3459
+
+K8 - a = 0.2461
+
+K10 - a = 0.3291
+
+### 2PL Model - Remove Items
+
+```{r}
+# Remove the items
+irt_removed_items <- c("K3", "K5", "K7", "K8", "K10")
+
+# Create new dataset with only included items
+data4 <- data3 %>% dplyr::select(-any_of(irt_removed_items))
+```
+
+### Descriptive Statistics
+
+```{r}
+descript(data4)
+```
+
+### Refit 2PL Model
+
+```{r}
+irt.data4 <- ltm(data4 ~ z1, IRT.param = TRUE)
+```
+
+### Item Parameter Estimates
+
+```{r}
+# Obtain difficulty and discrimination parameter estimates
+item_parms_refined <- coef(irt.data4)
+
+# Tidy view: Item | a (Discrimination) | b (Difficulty)
+
+item_parms_refined_tbl <- item_parms_refined |>
+  as.data.frame() |>
+  transform(Item = rownames(item_parms_refined),
+            Difficulty = Dffclt,
+            Discrimination = Dscrmn) |>
+  (\(d) d[, c("Item", "Difficulty", "Discrimination")])() |>
+  (\(d) within(d, { 
+    Difficulty <- round(Difficulty, 3)
+    Discrimination <- round(Discrimination, 3)
+  }))()
+
+item_parms_refined_tbl
+```
+
+### Model Summary
+
+```{r}
+# Includes log-likelihood, AIC/BIC, SEs, and Wald z-values
+summary(irt.data4)
+```
+
+## Graphical Presentation
+
+### Item Characteristic Curves (ICC)
+
+```{r}
+# ICC for All Items
+# Plot ICC for all items
+plot(irt.data4, type = "ICC", legend = TRUE)
+```
+
+```{r}
+# ICC for Individual Items
+
+# Get total number of items
+ICC_items <- nrow(coef(irt.data4))
+
+# Plot ICC for each item
+for (i in 1:ICC_items) {
+  plot(irt.data4, type = "ICC", legend = TRUE, items = i)
+}
+```
+
+## Goodness-of-Fit Tests
+
+### Item Fit Statistics
+
+```{r}
+item_fit <- item.fit(irt.data4)
+item_fit
+```
+
+### Fit on the Two-Way Margins
+
+```{r}
+margins_output <- margins(irt.data4)
+margins_output
+```
+
+### Person Fit Statistics
+
+```{r}
+person_fit <- person.fit(irt.data4)
+person_fit
+```
+
+## Unidimensionality
+
+```{r}
+set.seed(2025)
+unidimTest(irt.data4)
+```
+
+```{r}
+mirt.data4 = mirt(data4, 1, itemtype = "2PL")
+coef(mirt.data4, IRTpars = T, simplify = T)
+```
+
+# Fitting 2PL IRT Model with `mirt` Package
+
+```{r}
+# Fit 2PL Model (mirt)
+
+mirt.data4 <- mirt(data4, 1, itemtype = "2PL")
+```
+
+## Item Parameter Estimates (mirt)
+
+```{r}
+# Obtain difficulty (b), discrimination (a), guessing (g), upper bound (u)
+mirt_parms <- coef(mirt.data4, IRTpars = TRUE, simplify = TRUE)
+item_parms_refined_mirt <- mirt_parms$items
+
+
+# Tidy view: Item | Discrimination | Difficulty | Guessing Parameter | Upper Bound
+item_parms_refined_tbl_mirt <- item_parms_refined_mirt |>
+  as.data.frame() |>
+  (\(d) {
+    if (!"g" %in% names(d)) d$g <- NA_real_
+    if (!"u" %in% names(d)) d$u <- NA_real_
+    d
+  })() |>
+  transform(
+    Item               = rownames(item_parms_refined_mirt),
+    Difficulty         = b,
+    Discrimination     = a,
+    `Guessing Parameter` = g,
+    `Upper Bound`        = u
+  ) |>
+  (\(d) d[, c("Item", "Difficulty", "Discrimination", "Guessing Parameter", "Upper Bound")])() |>
+  (\(d) within(d, {
+    Difficulty          <- round(Difficulty, 3)
+    Discrimination      <- round(Discrimination, 3)
+    `Guessing Parameter`<- round(`Guessing Parameter`, 3)
+    `Upper Bound`       <- round(`Upper Bound`, 3)
+  }))()
+
+item_parms_refined_tbl_mirt
+```
+
+## Test Information
+
+```{r}
+areainfo(mirt.data4, c(-3,3))
+```
+
+## Graphical Presentation
+
+### Item Trace Lines (Item Characteristic Curves)
+
+```{r}
+plot(mirt.data4, type = "trace")
+```
+
+### Item Information Curves
+
+```{r}
+plot(mirt.data4, type = "infotrace")
+```
+
+### Test Information Function
+
+```{r}
+plot(mirt.data4, type = "info")
+```
+
+### Test Information and Standard Error
+
+```{r}
+plot(mirt.data4, type = "infoSE")
+```
+
+### Expected Total Score
+
+```{r}
+plot(mirt.data4)
+```
+
+## Goodness-of-Fit Tests
+
+### Overall Model Fit
+
+```{r}
+M2(mirt.data4)
+```
+
+### Item Fit Statistics
+
+```{r}
+itemfit(mirt.data4)
+```
+
+### Person Fit Statistics
+
+```{r}
+personfit(mirt.data4)
+```
+
+## Reliability Estimates
+
+### Marginal Reliability
+
+```{r}
+marginal_rxx(mirt.data4)
+```
+
+### Empirical Reliability
+
+```{r}
+theta_se = fscores(mirt.data4, full.scores.SE = TRUE)
+empirical_rxx(theta_se)
+```
