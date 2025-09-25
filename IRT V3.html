@@ -1,0 +1,2725 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.7.32">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="firdaus">
+
+<title>IRT</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="IRT V3_files/libs/clipboard/clipboard.min.js"></script>
+<script src="IRT V3_files/libs/quarto-html/quarto.js" type="module"></script>
+<script src="IRT V3_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="IRT V3_files/libs/quarto-html/popper.min.js"></script>
+<script src="IRT V3_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="IRT V3_files/libs/quarto-html/anchor.min.js"></script>
+<link href="IRT V3_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="IRT V3_files/libs/quarto-html/quarto-syntax-highlighting-37eea08aefeeee20ff55810ff984fec1.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="IRT V3_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="IRT V3_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="IRT V3_files/libs/bootstrap/bootstrap-bb462d781dde1847d9e3ccf7736099dd.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body class="fullcontent quarto-light">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">IRT</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>firdaus </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="prepare-environment" class="level1">
+<h1>Prepare Environment</h1>
+<section id="load-libraries" class="level2">
+<h2 class="anchored" data-anchor-id="load-libraries">Load Libraries</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(psych)        <span class="co"># For basic psychometrics and scale reliability analysis</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(foreign)      <span class="co"># For reading and writing data in foreign statistical formats</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ltm)          <span class="co"># To fit 2PL IRT models and other latent trait models</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: MASS</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: msm</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: polycor</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'polycor'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following object is masked from 'package:psych':
+
+    polyserial</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'ltm'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following object is masked from 'package:psych':
+
+    factor.scores</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(irtoys)       <span class="co"># For IRT utilities</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: sm</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Package 'sm', version 2.2-6.0: type help(sm) for summary information</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'sm'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following object is masked from 'package:MASS':
+
+    muscle</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'irtoys'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following object is masked from 'package:psych':
+
+    sim</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mirt)         <span class="co"># Modern IRT package for multi-item response theory</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: stats4</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: lattice</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'mirt'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following object is masked from 'package:ltm':
+
+    Science</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(latticeExtra) <span class="co"># For enhanced plotting in lattice-based plots</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)    <span class="co"># For data manipulation, cleaning, and visualization</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+✔ dplyr     1.1.4     ✔ readr     2.1.5
+✔ forcats   1.0.0     ✔ stringr   1.5.1
+✔ ggplot2   4.0.0     ✔ tibble    3.3.0
+✔ lubridate 1.9.4     ✔ tidyr     1.3.1
+✔ purrr     1.1.0     </code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+✖ ggplot2::%+%()   masks psych::%+%()
+✖ ggplot2::alpha() masks psych::alpha()
+✖ dplyr::filter()  masks stats::filter()
+✖ dplyr::lag()     masks stats::lag()
+✖ ggplot2::layer() masks latticeExtra::layer()
+✖ dplyr::select()  masks MASS::select()
+ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(haven)        <span class="co"># For importing and exporting SPSS, Stata, and SAS files</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(writexl)      <span class="co"># For exporting data frames to Excel files</span></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(readxl)       <span class="co"># For reading data from Excel files</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="load-data" class="level2">
+<h2 class="anchored" data-anchor-id="load-data">Load Data</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>data1<span class="ot">=</span><span class="fu">read_xlsx</span>(<span class="st">"IRT_knowledge.xlsx"</span>) <span class="do">##read data from Excel </span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(data1) <span class="co"># List down variables in the data set</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "K1"  "K2"  "K3"  "K4"  "K5"  "K6"  "K7"  "K8"  "K9"  "K10" "K11" "K12"
+[13] "K13" "K14" "K15" "K16" "K17" "K18" "K19" "K20" "K21" "K22" "K23" "K24"
+[25] "K25" "K26" "K27" "K28" "K29" "K30" "K31" "K32" "K33" "K34" "K35" "K36"
+[37] "K37"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(data1)  <span class="co"># Data set consists of 37 variables and 177 parents</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 177  37</code></pre>
+</div>
+</div>
+<section id="recode-data" class="level3">
+<h3 class="anchored" data-anchor-id="recode-data">Recode Data</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Define reverse-coded items</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>reverse_items <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"K2"</span>, <span class="st">"K3"</span>, <span class="st">"K4"</span>, <span class="st">"K5"</span>, <span class="st">"K8"</span>, <span class="st">"K10"</span>, <span class="st">"K35"</span>)</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Recode</span></span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>data2 <span class="ot">&lt;-</span> data1 <span class="sc">%&gt;%</span></span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(</span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a>    <span class="sc">-</span><span class="fu">all_of</span>(reverse_items), </span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a>    <span class="sc">~</span> <span class="fu">case_when</span>(</span>
+<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a>      <span class="fu">tolower</span>(.) <span class="sc">==</span> <span class="st">"ya"</span> <span class="sc">~</span> <span class="dv">1</span>,</span>
+<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a>      <span class="fu">tolower</span>(.) <span class="sc">==</span> <span class="st">"tidak"</span> <span class="sc">~</span> <span class="dv">0</span>,</span>
+<span id="cb29-11"><a href="#cb29-11" aria-hidden="true" tabindex="-1"></a>      <span class="fu">tolower</span>(.) <span class="sc">==</span> <span class="st">"tidak pasti"</span> <span class="sc">~</span> <span class="dv">2</span>,</span>
+<span id="cb29-12"><a href="#cb29-12" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span> <span class="sc">~</span> <span class="cn">NA_real_</span></span>
+<span id="cb29-13"><a href="#cb29-13" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb29-14"><a href="#cb29-14" aria-hidden="true" tabindex="-1"></a>  )) <span class="sc">%&gt;%</span></span>
+<span id="cb29-15"><a href="#cb29-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(</span>
+<span id="cb29-16"><a href="#cb29-16" aria-hidden="true" tabindex="-1"></a>    <span class="fu">all_of</span>(reverse_items),</span>
+<span id="cb29-17"><a href="#cb29-17" aria-hidden="true" tabindex="-1"></a>     <span class="sc">~</span> <span class="fu">case_when</span>(</span>
+<span id="cb29-18"><a href="#cb29-18" aria-hidden="true" tabindex="-1"></a>      <span class="fu">tolower</span>(.) <span class="sc">==</span> <span class="st">"ya"</span> <span class="sc">~</span> <span class="dv">0</span>,</span>
+<span id="cb29-19"><a href="#cb29-19" aria-hidden="true" tabindex="-1"></a>      <span class="fu">tolower</span>(.) <span class="sc">==</span> <span class="st">"tidak"</span> <span class="sc">~</span> <span class="dv">1</span>,</span>
+<span id="cb29-20"><a href="#cb29-20" aria-hidden="true" tabindex="-1"></a>      <span class="fu">tolower</span>(.) <span class="sc">==</span> <span class="st">"tidak pasti"</span> <span class="sc">~</span> <span class="dv">2</span>,</span>
+<span id="cb29-21"><a href="#cb29-21" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span> <span class="sc">~</span> <span class="cn">NA_real_</span></span>
+<span id="cb29-22"><a href="#cb29-22" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb29-23"><a href="#cb29-23" aria-hidden="true" tabindex="-1"></a>  ))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Recode 1 = 1 (correct answer), 2 and 0 = 0 (incorrect answer)</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>data3 <span class="ot">&lt;-</span> data2 <span class="sc">%&gt;%</span></span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(</span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">everything</span>(),</span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>    <span class="sc">~</span> <span class="fu">case_when</span>(</span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>      . <span class="sc">==</span> <span class="dv">1</span> <span class="sc">~</span> <span class="dv">1</span>,</span>
+<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a>      . <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">2</span>) <span class="sc">~</span> <span class="dv">0</span>,</span>
+<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span> <span class="sc">~</span> <span class="cn">NA_real_</span></span>
+<span id="cb30-10"><a href="#cb30-10" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb30-11"><a href="#cb30-11" aria-hidden="true" tabindex="-1"></a>  ))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+</section>
+<section id="descriptive-statistics" class="level1">
+<h1>Descriptive Statistics</h1>
+<section id="response-frequencies" class="level2">
+<h2 class="anchored" data-anchor-id="response-frequencies">Response Frequencies</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">response.frequencies</span>(data3)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>             0         1 miss
+K1  0.19209040 0.8079096    0
+K2  0.62146893 0.3785311    0
+K3  0.52542373 0.4745763    0
+K4  0.64406780 0.3559322    0
+K5  0.32203390 0.6779661    0
+K6  0.84180791 0.1581921    0
+K7  0.56497175 0.4350282    0
+K8  0.57627119 0.4237288    0
+K9  0.46892655 0.5310734    0
+K10 0.49152542 0.5084746    0
+K11 0.64406780 0.3559322    0
+K12 0.76271186 0.2372881    0
+K13 0.18079096 0.8192090    0
+K14 0.33333333 0.6666667    0
+K15 0.58757062 0.4124294    0
+K16 0.60451977 0.3954802    0
+K17 0.14124294 0.8587571    0
+K18 0.40677966 0.5932203    0
+K19 0.45762712 0.5423729    0
+K20 0.44067797 0.5593220    0
+K21 0.43502825 0.5649718    0
+K22 0.40112994 0.5988701    0
+K23 0.29378531 0.7062147    0
+K24 0.27118644 0.7288136    0
+K25 0.24858757 0.7514124    0
+K26 0.41242938 0.5875706    0
+K27 0.72881356 0.2711864    0
+K28 0.56497175 0.4350282    0
+K29 0.47457627 0.5254237    0
+K30 0.82485876 0.1751412    0
+K31 0.20338983 0.7966102    0
+K32 0.28248588 0.7175141    0
+K33 0.34463277 0.6553672    0
+K34 0.15254237 0.8474576    0
+K35 0.55932203 0.4406780    0
+K36 0.06214689 0.9378531    0
+K37 0.13559322 0.8644068    0</code></pre>
+</div>
+</div>
+<section id="descriptive-statistics-1" class="level3">
+<h3 class="anchored" data-anchor-id="descriptive-statistics-1">Descriptive Statistics</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">descript</span>(data3)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Descriptive statistics for the 'data3' data-set
+
+Sample:
+ 37 items and 177 sample units; 0 missing values
+
+Proportions for each level of response:
+         0      1   logit
+K1  0.1921 0.8079  1.4365
+K2  0.6215 0.3785 -0.4958
+K3  0.5254 0.4746 -0.1018
+K4  0.6441 0.3559 -0.5931
+K5  0.3220 0.6780  0.7444
+K6  0.8418 0.1582 -1.6717
+K7  0.5650 0.4350 -0.2614
+K8  0.5763 0.4237 -0.3075
+K9  0.4689 0.5311  0.1245
+K10 0.4915 0.5085  0.0339
+K11 0.6441 0.3559 -0.5931
+K12 0.7627 0.2373 -1.1676
+K13 0.1808 0.8192  1.5110
+K14 0.3333 0.6667  0.6931
+K15 0.5876 0.4124 -0.3539
+K16 0.6045 0.3955 -0.4243
+K17 0.1412 0.8588  1.8050
+K18 0.4068 0.5932  0.3773
+K19 0.4576 0.5424  0.1699
+K20 0.4407 0.5593  0.2384
+K21 0.4350 0.5650  0.2614
+K22 0.4011 0.5989  0.4008
+K23 0.2938 0.7062  0.8771
+K24 0.2712 0.7288  0.9886
+K25 0.2486 0.7514  1.1062
+K26 0.4124 0.5876  0.3539
+K27 0.7288 0.2712 -0.9886
+K28 0.5650 0.4350 -0.2614
+K29 0.4746 0.5254  0.1018
+K30 0.8249 0.1751 -1.5496
+K31 0.2034 0.7966  1.3652
+K32 0.2825 0.7175  0.9322
+K33 0.3446 0.6554  0.6427
+K34 0.1525 0.8475  1.7148
+K35 0.5593 0.4407 -0.2384
+K36 0.0621 0.9379  2.7141
+K37 0.1356 0.8644  1.8524
+
+
+Frequencies of total scores:
+     0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27
+Freq 1 0 1 1 1 1 2 1 4 4  6  4  3  8  2  5  7  4  6  7  8 14 10  7 12 10  4  6
+     28 29 30 31 32 33 34 35 36 37
+Freq  9  6  7  3  3  3  2  1  2  2
+
+
+Point Biserial correlation with Total Score:
+    Included Excluded
+K1    0.3662   0.3210
+K2    0.2592   0.1995
+K3    0.2291   0.1668
+K4    0.3404   0.2842
+K5    0.0832   0.0231
+K6    0.3586   0.3166
+K7    0.2962   0.2363
+K8    0.2922   0.2323
+K9    0.3504   0.2921
+K10   0.3369   0.2780
+K11   0.3297   0.2731
+K12   0.4306   0.3843
+K13   0.3831   0.3396
+K14   0.3120   0.2557
+K15   0.4776   0.4264
+K16   0.4531   0.4009
+K17   0.4347   0.3973
+K18   0.5742   0.5294
+K19   0.6541   0.6150
+K20   0.6705   0.6329
+K21   0.6997   0.6648
+K22   0.6605   0.6226
+K23   0.6977   0.6656
+K24   0.7227   0.6936
+K25   0.7128   0.6837
+K26   0.4972   0.4472
+K27   0.5352   0.4924
+K28   0.5224   0.4736
+K29   0.5817   0.5367
+K30   0.5083   0.4706
+K31   0.6344   0.6018
+K32   0.6613   0.6267
+K33   0.6077   0.5668
+K34   0.4101   0.3705
+K35   0.2711   0.2104
+K36   0.4276   0.4017
+K37   0.4448   0.4084
+
+
+Cronbach's alpha:
+               value
+All Items     0.8975
+Excluding K1  0.8963
+Excluding K2  0.8985
+Excluding K3  0.8992
+Excluding K4  0.8971
+Excluding K5  0.9011
+Excluding K6  0.8963
+Excluding K7  0.8980
+Excluding K8  0.8981
+Excluding K9  0.8971
+Excluding K10 0.8973
+Excluding K11 0.8973
+Excluding K12 0.8954
+Excluding K13 0.8961
+Excluding K14 0.8975
+Excluding K15 0.8948
+Excluding K16 0.8952
+Excluding K17 0.8954
+Excluding K18 0.8930
+Excluding K19 0.8915
+Excluding K20 0.8912
+Excluding K21 0.8907
+Excluding K22 0.8914
+Excluding K23 0.8910
+Excluding K24 0.8906
+Excluding K25 0.8909
+Excluding K26 0.8944
+Excluding K27 0.8938
+Excluding K28 0.8940
+Excluding K29 0.8929
+Excluding K30 0.8943
+Excluding K31 0.8924
+Excluding K32 0.8916
+Excluding K33 0.8925
+Excluding K34 0.8957
+Excluding K35 0.8985
+Excluding K36 0.8958
+Excluding K37 0.8953
+
+
+Pairwise Associations:
+   Item i Item j p.value
+1       2     11   1.000
+2       2     36   1.000
+3       3      9   1.000
+4       3     19   1.000
+5       3     29   1.000
+6       3     32   1.000
+7       5     20   1.000
+8       5     35   1.000
+9       5     36   1.000
+10     10     20   1.000</code></pre>
+</div>
+</div>
+</section>
+</section>
+</section>
+<section id="fitting-2pl-irt-model-with-ltm-package" class="level1">
+<h1>Fitting 2PL IRT Model with <code>ltm</code> Package</h1>
+<section id="fit-2pl-model-ltm" class="level2">
+<h2 class="anchored" data-anchor-id="fit-2pl-model-ltm">Fit 2PL Model (ltm)</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>irt.data3 <span class="ot">&lt;-</span> <span class="fu">ltm</span>(data3 <span class="sc">~</span> z1, <span class="at">IRT.param =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="item-parameter-estimates" class="level2">
+<h2 class="anchored" data-anchor-id="item-parameter-estimates">Item Parameter Estimates</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Obtain difficulty and discrimination parameter estimates</span></span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>item_parms <span class="ot">&lt;-</span> <span class="fu">coef</span>(irt.data3)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Tidy view: Item | a (Discrimination) | b (Difficulty)</span></span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>item_parms_tbl <span class="ot">&lt;-</span> item_parms <span class="sc">|&gt;</span></span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.data.frame</span>() <span class="sc">|&gt;</span></span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">transform</span>(<span class="at">Item =</span> <span class="fu">rownames</span>(item_parms),</span>
+<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a>            <span class="at">Difficulty =</span> Dffclt,</span>
+<span id="cb37-7"><a href="#cb37-7" aria-hidden="true" tabindex="-1"></a>            <span class="at">Discrimination =</span> Dscrmn) <span class="sc">|&gt;</span></span>
+<span id="cb37-8"><a href="#cb37-8" aria-hidden="true" tabindex="-1"></a>  (\(d) d[, <span class="fu">c</span>(<span class="st">"Item"</span>, <span class="st">"Difficulty"</span>, <span class="st">"Discrimination"</span>)])() <span class="sc">|&gt;</span></span>
+<span id="cb37-9"><a href="#cb37-9" aria-hidden="true" tabindex="-1"></a>  (\(d) <span class="fu">within</span>(d, { </span>
+<span id="cb37-10"><a href="#cb37-10" aria-hidden="true" tabindex="-1"></a>    Difficulty <span class="ot">&lt;-</span> <span class="fu">round</span>(Difficulty, <span class="dv">3</span>)</span>
+<span id="cb37-11"><a href="#cb37-11" aria-hidden="true" tabindex="-1"></a>    Discrimination <span class="ot">&lt;-</span> <span class="fu">round</span>(Discrimination, <span class="dv">3</span>)</span>
+<span id="cb37-12"><a href="#cb37-12" aria-hidden="true" tabindex="-1"></a>  }))()</span>
+<span id="cb37-13"><a href="#cb37-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-14"><a href="#cb37-14" aria-hidden="true" tabindex="-1"></a>item_parms_tbl</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>    Item Difficulty Discrimination
+K1    K1     -1.601          0.852
+K2    K2      1.679          0.377
+K3    K3      0.661          0.306
+K4    K4      1.469          0.552
+K5    K5    -19.308          0.038
+K6    K6      2.369          0.951
+K7    K7      1.098          0.346
+K8    K8      1.589          0.246
+K9    K9     -0.017          0.382
+K10  K10      0.214          0.329
+K11  K11      1.849          0.403
+K12  K12      1.984          0.790
+K13  K13     -1.447          1.016
+K14  K14     -0.625          0.841
+K15  K15      0.673          1.281
+K16  K16      0.788          1.108
+K17  K17     -1.243          1.606
+K18  K18     -0.044          1.382
+K19  K19      0.209          5.355
+K20  K20      0.154          6.989
+K21  K21      0.030         36.793
+K22  K22      0.078          5.111
+K23  K23     -0.140          6.839
+K24  K24     -0.047         30.528
+K25  K25     -0.089         22.968
+K26  K26     -0.115          0.970
+K27  K27      1.153          1.696
+K28  K28      0.589          1.215
+K29  K29      0.214          1.282
+K30  K30      1.497          2.081
+K31  K31     -0.531          3.628
+K32  K32     -0.266          3.467
+K33  K33     -0.162          2.181
+K34  K34     -1.248          1.464
+K35  K35      0.970          0.380
+K36  K36     -1.524          2.784
+K37  K37     -1.282          1.606</code></pre>
+</div>
+</div>
+</section>
+<section id="model-summary" class="level2">
+<h2 class="anchored" data-anchor-id="model-summary">Model Summary</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Includes log-likelihood, AIC/BIC, SEs, and Wald z-values</span></span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(irt.data3)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+ltm(formula = data3 ~ z1, IRT.param = TRUE)
+
+Model Summary:
+   log.Lik      AIC      BIC
+ -3149.873 6447.746 6682.781
+
+Coefficients:
+              value    std.err  z.vals
+Dffclt.K1   -1.6007     0.4779 -3.3492
+Dffclt.K2    1.6790     0.7084  2.3702
+Dffclt.K3    0.6608     0.5277  1.2523
+Dffclt.K4    1.4686     0.4470  3.2853
+Dffclt.K5  -19.3079    85.0992 -0.2269
+Dffclt.K6    2.3694     0.4879  4.8561
+Dffclt.K7    1.0978     0.5659  1.9401
+Dffclt.K8    1.5887     1.0149  1.5653
+Dffclt.K9   -0.0174     0.4240 -0.0411
+Dffclt.K10   0.2141     0.4662  0.4592
+Dffclt.K11   1.8492     0.7300  2.5330
+Dffclt.K12   1.9842     0.4463  4.4459
+Dffclt.K13  -1.4470     0.3867 -3.7424
+Dffclt.K14  -0.6249     0.2750 -2.2721
+Dffclt.K15   0.6728     0.1471  4.5747
+Dffclt.K16   0.7883     0.1733  4.5491
+Dffclt.K17  -1.2426     0.2503 -4.9642
+Dffclt.K18  -0.0444     0.1354 -0.3283
+Dffclt.K19   0.2090     0.0537  3.8952
+Dffclt.K20   0.1537     0.0492  3.1227
+Dffclt.K21   0.0299    24.8027  0.0012
+Dffclt.K22   0.0781     0.0519  1.5064
+Dffclt.K23  -0.1403     0.0566 -2.4772
+Dffclt.K24  -0.0470     8.5022 -0.0055
+Dffclt.K25  -0.0886     1.5487 -0.0572
+Dffclt.K26  -0.1147     0.1864 -0.6153
+Dffclt.K27   1.1529     0.1579  7.3012
+Dffclt.K28   0.5893     0.1481  3.9804
+Dffclt.K29   0.2145     0.1353  1.5852
+Dffclt.K30   1.4974     0.1804  8.3022
+Dffclt.K31  -0.5314     0.0909 -5.8482
+Dffclt.K32  -0.2655     0.0793 -3.3491
+Dffclt.K33  -0.1623     0.1012 -1.6046
+Dffclt.K34  -1.2477     0.2646 -4.7158
+Dffclt.K35   0.9700     0.4861  1.9954
+Dffclt.K36  -1.5235     0.2338 -6.5176
+Dffclt.K37  -1.2824     0.2543 -5.0418
+Dscrmn.K1    0.8525     0.2334  3.6521
+Dscrmn.K2    0.3773     0.1691  2.2317
+Dscrmn.K3    0.3056     0.1604  1.9056
+Dscrmn.K4    0.5519     0.1816  3.0392
+Dscrmn.K5    0.0379     0.1644  0.2308
+Dscrmn.K6    0.9513     0.2602  3.6557
+Dscrmn.K7    0.3459     0.1642  2.1066
+Dscrmn.K8    0.2461     0.1599  1.5386
+Dscrmn.K9    0.3823     0.1657  2.3079
+Dscrmn.K10   0.3291     0.1625  2.0247
+Dscrmn.K11   0.4028     0.1730  2.3283
+Dscrmn.K12   0.7896     0.2195  3.5980
+Dscrmn.K13   1.0159     0.2542  3.9969
+Dscrmn.K14   0.8410     0.2099  4.0060
+Dscrmn.K15   1.2808     0.2600  4.9262
+Dscrmn.K16   1.1082     0.2379  4.6578
+Dscrmn.K17   1.6059     0.3464  4.6363
+Dscrmn.K18   1.3819     0.2655  5.2054
+Dscrmn.K19   5.3550     0.9265  5.7801
+Dscrmn.K20   6.9893     1.5578  4.4866
+Dscrmn.K21  36.7926 30493.1481  0.0012
+Dscrmn.K22   5.1112     0.9485  5.3885
+Dscrmn.K23   6.8393     2.2209  3.0795
+Dscrmn.K24  30.5278  5525.1425  0.0055
+Dscrmn.K25  22.9676   401.2722  0.0572
+Dscrmn.K26   0.9704     0.2162  4.4878
+Dscrmn.K27   1.6958     0.3313  5.1192
+Dscrmn.K28   1.2151     0.2463  4.9339
+Dscrmn.K29   1.2818     0.2516  5.0953
+Dscrmn.K30   2.0807     0.4332  4.8030
+Dscrmn.K31   3.6280     0.6751  5.3740
+Dscrmn.K32   3.4671     0.6640  5.2215
+Dscrmn.K33   2.1810     0.3927  5.5539
+Dscrmn.K34   1.4644     0.3155  4.6414
+Dscrmn.K35   0.3796     0.1661  2.2848
+Dscrmn.K36   2.7836     0.7287  3.8197
+Dscrmn.K37   1.6062     0.3434  4.6769
+
+Integration:
+method: Gauss-Hermite
+quadrature points: 21 
+
+Optimization:
+Convergence: 0 
+max(|grad|): 1.6e-05 
+quasi-Newton: BFGS </code></pre>
+</div>
+</div>
+</section>
+<section id="items-removal-plan" class="level2">
+<h2 class="anchored" data-anchor-id="items-removal-plan">Items Removal Plan</h2>
+<p><strong>Selection criteria a &gt; 0.35 ; -3 &lt; b &gt; +3</strong></p>
+<p>K3 - a = 0.3056</p>
+<p>K5 - b = -19.3079</p>
+<p>K7 - a = 0.3459</p>
+<p>K8 - a = 0.2461</p>
+<p>K10 - a = 0.3291</p>
+<section id="pl-model---remove-items" class="level3">
+<h3 class="anchored" data-anchor-id="pl-model---remove-items">2PL Model - Remove Items</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Remove the items</span></span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>irt_removed_items <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"K3"</span>, <span class="st">"K5"</span>, <span class="st">"K7"</span>, <span class="st">"K8"</span>, <span class="st">"K10"</span>)</span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Create new dataset with only included items</span></span>
+<span id="cb41-5"><a href="#cb41-5" aria-hidden="true" tabindex="-1"></a>data4 <span class="ot">&lt;-</span> data3 <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">-</span><span class="fu">any_of</span>(irt_removed_items))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="descriptive-statistics-2" class="level3">
+<h3 class="anchored" data-anchor-id="descriptive-statistics-2">Descriptive Statistics</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="fu">descript</span>(data4)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Descriptive statistics for the 'data4' data-set
+
+Sample:
+ 32 items and 177 sample units; 0 missing values
+
+Proportions for each level of response:
+         0      1   logit
+K1  0.1921 0.8079  1.4365
+K2  0.6215 0.3785 -0.4958
+K4  0.6441 0.3559 -0.5931
+K6  0.8418 0.1582 -1.6717
+K9  0.4689 0.5311  0.1245
+K11 0.6441 0.3559 -0.5931
+K12 0.7627 0.2373 -1.1676
+K13 0.1808 0.8192  1.5110
+K14 0.3333 0.6667  0.6931
+K15 0.5876 0.4124 -0.3539
+K16 0.6045 0.3955 -0.4243
+K17 0.1412 0.8588  1.8050
+K18 0.4068 0.5932  0.3773
+K19 0.4576 0.5424  0.1699
+K20 0.4407 0.5593  0.2384
+K21 0.4350 0.5650  0.2614
+K22 0.4011 0.5989  0.4008
+K23 0.2938 0.7062  0.8771
+K24 0.2712 0.7288  0.9886
+K25 0.2486 0.7514  1.1062
+K26 0.4124 0.5876  0.3539
+K27 0.7288 0.2712 -0.9886
+K28 0.5650 0.4350 -0.2614
+K29 0.4746 0.5254  0.1018
+K30 0.8249 0.1751 -1.5496
+K31 0.2034 0.7966  1.3652
+K32 0.2825 0.7175  0.9322
+K33 0.3446 0.6554  0.6427
+K34 0.1525 0.8475  1.7148
+K35 0.5593 0.4407 -0.2384
+K36 0.0621 0.9379  2.7141
+K37 0.1356 0.8644  1.8524
+
+
+Frequencies of total scores:
+     0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27
+Freq 1 0 2 2 2 3 3 3 4 8  1  9  6  5  6  0  7  9  9  8 13 12  8 12  7  8  6  8
+     28 29 30 31 32
+Freq  5  4  0  2  4
+
+
+Point Biserial correlation with Total Score:
+    Included Excluded
+K1    0.3615   0.3131
+K2    0.2376   0.1734
+K4    0.3106   0.2494
+K6    0.3622   0.3175
+K9    0.2691   0.2039
+K11   0.2620   0.1992
+K12   0.3876   0.3363
+K13   0.4254   0.3806
+K14   0.3662   0.3082
+K15   0.5296   0.4783
+K16   0.4996   0.4466
+K17   0.4725   0.4340
+K18   0.5689   0.5206
+K19   0.7051   0.6681
+K20   0.7063   0.6695
+K21   0.7335   0.6995
+K22   0.6933   0.6558
+K23   0.7251   0.6933
+K24   0.7463   0.7172
+K25   0.7405   0.7118
+K26   0.4861   0.4319
+K27   0.5479   0.5030
+K28   0.5179   0.4654
+K29   0.5602   0.5103
+K30   0.5197   0.4800
+K31   0.6519   0.6183
+K32   0.6861   0.6512
+K33   0.6272   0.5850
+K34   0.4394   0.3982
+K35   0.2618   0.1967
+K36   0.4472   0.4201
+K37   0.4619   0.4236
+
+
+Cronbach's alpha:
+               value
+All Items     0.9071
+Excluding K1  0.9065
+Excluding K2  0.9092
+Excluding K4  0.9079
+Excluding K6  0.9063
+Excluding K9  0.9089
+Excluding K11 0.9087
+Excluding K12 0.9062
+Excluding K13 0.9055
+Excluding K14 0.9069
+Excluding K15 0.9041
+Excluding K16 0.9046
+Excluding K17 0.9049
+Excluding K18 0.9033
+Excluding K19 0.9007
+Excluding K20 0.9007
+Excluding K21 0.9001
+Excluding K22 0.9010
+Excluding K23 0.9005
+Excluding K24 0.9002
+Excluding K25 0.9005
+Excluding K26 0.9049
+Excluding K27 0.9037
+Excluding K28 0.9043
+Excluding K29 0.9035
+Excluding K30 0.9042
+Excluding K31 0.9021
+Excluding K32 0.9013
+Excluding K33 0.9023
+Excluding K34 0.9053
+Excluding K35 0.9090
+Excluding K36 0.9055
+Excluding K37 0.9050
+
+
+Pairwise Associations:
+   Item i Item j p.value
+1       2      6   1.000
+2       2     31   1.000
+3      28     30   1.000
+4       5     29   1.000
+5       1     25   1.000
+6       5     32   1.000
+7       2      8   1.000
+8       2     24   1.000
+9       8     30   1.000
+10      2     26   1.000</code></pre>
+</div>
+</div>
+</section>
+<section id="refit-2pl-model" class="level3">
+<h3 class="anchored" data-anchor-id="refit-2pl-model">Refit 2PL Model</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>irt.data4 <span class="ot">&lt;-</span> <span class="fu">ltm</span>(data4 <span class="sc">~</span> z1, <span class="at">IRT.param =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="item-parameter-estimates-1" class="level3">
+<h3 class="anchored" data-anchor-id="item-parameter-estimates-1">Item Parameter Estimates</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Obtain difficulty and discrimination parameter estimates</span></span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>item_parms_refined <span class="ot">&lt;-</span> <span class="fu">coef</span>(irt.data4)</span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Tidy view: Item | a (Discrimination) | b (Difficulty)</span></span>
+<span id="cb45-5"><a href="#cb45-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-6"><a href="#cb45-6" aria-hidden="true" tabindex="-1"></a>item_parms_refined_tbl <span class="ot">&lt;-</span> item_parms_refined <span class="sc">|&gt;</span></span>
+<span id="cb45-7"><a href="#cb45-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.data.frame</span>() <span class="sc">|&gt;</span></span>
+<span id="cb45-8"><a href="#cb45-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">transform</span>(<span class="at">Item =</span> <span class="fu">rownames</span>(item_parms_refined),</span>
+<span id="cb45-9"><a href="#cb45-9" aria-hidden="true" tabindex="-1"></a>            <span class="at">Difficulty =</span> Dffclt,</span>
+<span id="cb45-10"><a href="#cb45-10" aria-hidden="true" tabindex="-1"></a>            <span class="at">Discrimination =</span> Dscrmn) <span class="sc">|&gt;</span></span>
+<span id="cb45-11"><a href="#cb45-11" aria-hidden="true" tabindex="-1"></a>  (\(d) d[, <span class="fu">c</span>(<span class="st">"Item"</span>, <span class="st">"Difficulty"</span>, <span class="st">"Discrimination"</span>)])() <span class="sc">|&gt;</span></span>
+<span id="cb45-12"><a href="#cb45-12" aria-hidden="true" tabindex="-1"></a>  (\(d) <span class="fu">within</span>(d, { </span>
+<span id="cb45-13"><a href="#cb45-13" aria-hidden="true" tabindex="-1"></a>    Difficulty <span class="ot">&lt;-</span> <span class="fu">round</span>(Difficulty, <span class="dv">3</span>)</span>
+<span id="cb45-14"><a href="#cb45-14" aria-hidden="true" tabindex="-1"></a>    Discrimination <span class="ot">&lt;-</span> <span class="fu">round</span>(Discrimination, <span class="dv">3</span>)</span>
+<span id="cb45-15"><a href="#cb45-15" aria-hidden="true" tabindex="-1"></a>  }))()</span>
+<span id="cb45-16"><a href="#cb45-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-17"><a href="#cb45-17" aria-hidden="true" tabindex="-1"></a>item_parms_refined_tbl</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>    Item Difficulty Discrimination
+K1    K1     -1.616          0.846
+K2    K2      1.720          0.364
+K4    K4      1.494          0.535
+K6    K6      2.362          0.951
+K9    K9     -0.057          0.345
+K11  K11      1.979          0.368
+K12  K12      2.015          0.769
+K13  K13     -1.446          1.020
+K14  K14     -0.609          0.864
+K15  K15      0.668          1.296
+K16  K16      0.783          1.117
+K17  K17     -1.247          1.607
+K18  K18     -0.051          1.357
+K19  K19      0.207          5.424
+K20  K20      0.151          7.056
+K21  K21      0.029         37.433
+K22  K22      0.077          5.112
+K23  K23     -0.136          7.137
+K24  K24     -0.043         33.325
+K25  K25     -0.072         28.604
+K26  K26     -0.122          0.957
+K27  K27      1.148          1.705
+K28  K28      0.588          1.208
+K29  K29      0.211          1.259
+K30  K30      1.484          2.118
+K31  K31     -0.535          3.600
+K32  K32     -0.269          3.429
+K33  K33     -0.165          2.175
+K34  K34     -1.251          1.466
+K35  K35      0.982          0.369
+K36  K36     -1.535          2.787
+K37  K37     -1.284          1.612</code></pre>
+</div>
+</div>
+</section>
+<section id="model-summary-1" class="level3">
+<h3 class="anchored" data-anchor-id="model-summary-1">Model Summary</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Includes log-likelihood, AIC/BIC, SEs, and Wald z-values</span></span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(irt.data4)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+ltm(formula = data4 ~ z1, IRT.param = TRUE)
+
+Model Summary:
+   log.Lik      AIC      BIC
+ -2559.011 5246.023 5449.297
+
+Coefficients:
+             value    std.err  z.vals
+Dffclt.K1  -1.6158     0.4823 -3.3501
+Dffclt.K2   1.7205     0.7546  2.2801
+Dffclt.K4   1.4943     0.4688  3.1875
+Dffclt.K6   2.3618     0.4934  4.7872
+Dffclt.K9  -0.0571     0.4745 -0.1203
+Dffclt.K11  1.9788     0.8537  2.3180
+Dffclt.K12  2.0147     0.4683  4.3024
+Dffclt.K13 -1.4455     0.3830 -3.7737
+Dffclt.K14 -0.6085     0.2657 -2.2905
+Dffclt.K15  0.6676     0.1453  4.5944
+Dffclt.K16  0.7825     0.1716  4.5612
+Dffclt.K17 -1.2471     0.2500 -4.9886
+Dffclt.K18 -0.0508     0.1379 -0.3685
+Dffclt.K19  0.2071     0.0534  3.8774
+Dffclt.K20  0.1514     0.0486  3.1175
+Dffclt.K21  0.0290    29.6075  0.0010
+Dffclt.K22  0.0768     0.0519  1.4787
+Dffclt.K23 -0.1362     0.0593 -2.2992
+Dffclt.K24 -0.0433    17.2475 -0.0025
+Dffclt.K25 -0.0715     5.9231 -0.0121
+Dffclt.K26 -0.1220     0.1891 -0.6454
+Dffclt.K27  1.1480     0.1568  7.3218
+Dffclt.K28  0.5880     0.1488  3.9521
+Dffclt.K29  0.2111     0.1374  1.5363
+Dffclt.K30  1.4842     0.1767  8.4015
+Dffclt.K31 -0.5350     0.0920 -5.8176
+Dffclt.K32 -0.2690     0.0801 -3.3588
+Dffclt.K33 -0.1646     0.1016 -1.6197
+Dffclt.K34 -1.2511     0.2638 -4.7416
+Dffclt.K35  0.9819     0.5045  1.9462
+Dffclt.K36 -1.5351     0.2329 -6.5909
+Dffclt.K37 -1.2844     0.2527 -5.0819
+Dscrmn.K1   0.8463     0.2320  3.6478
+Dscrmn.K2   0.3638     0.1697  2.1435
+Dscrmn.K4   0.5355     0.1818  2.9455
+Dscrmn.K6   0.9508     0.2642  3.5982
+Dscrmn.K9   0.3446     0.1643  2.0979
+Dscrmn.K11  0.3678     0.1725  2.1318
+Dscrmn.K12  0.7685     0.2200  3.4940
+Dscrmn.K13  1.0204     0.2534  4.0269
+Dscrmn.K14  0.8642     0.2113  4.0888
+Dscrmn.K15  1.2963     0.2619  4.9498
+Dscrmn.K16  1.1175     0.2392  4.6713
+Dscrmn.K17  1.6068     0.3450  4.6574
+Dscrmn.K18  1.3567     0.2626  5.1655
+Dscrmn.K19  5.4236     0.9435  5.7485
+Dscrmn.K20  7.0559     1.5829  4.4576
+Dscrmn.K21 37.4327 38153.1017  0.0010
+Dscrmn.K22  5.1122     0.9684  5.2792
+Dscrmn.K23  7.1367     2.7422  2.6025
+Dscrmn.K24 33.3246 13285.2138  0.0025
+Dscrmn.K25 28.6040  2369.1238  0.0121
+Dscrmn.K26  0.9574     0.2152  4.4486
+Dscrmn.K27  1.7050     0.3329  5.1218
+Dscrmn.K28  1.2076     0.2459  4.9105
+Dscrmn.K29  1.2594     0.2498  5.0405
+Dscrmn.K30  2.1177     0.4399  4.8136
+Dscrmn.K31  3.6005     0.6747  5.3367
+Dscrmn.K32  3.4290     0.6526  5.2540
+Dscrmn.K33  2.1747     0.3926  5.5391
+Dscrmn.K34  1.4664     0.3142  4.6674
+Dscrmn.K35  0.3691     0.1668  2.2127
+Dscrmn.K36  2.7873     0.7197  3.8728
+Dscrmn.K37  1.6118     0.3422  4.7098
+
+Integration:
+method: Gauss-Hermite
+quadrature points: 21 
+
+Optimization:
+Convergence: 0 
+max(|grad|): 6.7e-06 
+quasi-Newton: BFGS </code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="graphical-presentation" class="level2">
+<h2 class="anchored" data-anchor-id="graphical-presentation">Graphical Presentation</h2>
+<section id="item-characteristic-curves-icc" class="level3">
+<h3 class="anchored" data-anchor-id="item-characteristic-curves-icc">Item Characteristic Curves (ICC)</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ICC for All Items</span></span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot ICC for all items</span></span>
+<span id="cb49-3"><a href="#cb49-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(irt.data4, <span class="at">type =</span> <span class="st">"ICC"</span>, <span class="at">legend =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="IRT-V3_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ICC for Individual Items</span></span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Get total number of items</span></span>
+<span id="cb50-4"><a href="#cb50-4" aria-hidden="true" tabindex="-1"></a>ICC_items <span class="ot">&lt;-</span> <span class="fu">nrow</span>(<span class="fu">coef</span>(irt.data4))</span>
+<span id="cb50-5"><a href="#cb50-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb50-6"><a href="#cb50-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot ICC for each item</span></span>
+<span id="cb50-7"><a href="#cb50-7" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>ICC_items) {</span>
+<span id="cb50-8"><a href="#cb50-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plot</span>(irt.data4, <span class="at">type =</span> <span class="st">"ICC"</span>, <span class="at">legend =</span> <span class="cn">TRUE</span>, <span class="at">items =</span> i)</span>
+<span id="cb50-9"><a href="#cb50-9" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="IRT-V3_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="IRT-V3_files/figure-html/unnamed-chunk-17-2.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="IRT-V3_files/figure-html/unnamed-chunk-17-3.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="IRT-V3_files/figure-html/unnamed-chunk-17-4.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="IRT-V3_files/figure-html/unnamed-chunk-17-5.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="IRT-V3_files/figure-html/unnamed-chunk-17-6.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="IRT-V3_files/figure-html/unnamed-chunk-17-7.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="IRT-V3_files/figure-html/unnamed-chunk-17-8.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="IRT-V3_files/figure-html/unnamed-chunk-17-9.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="IRT-V3_files/figure-html/unnamed-chunk-17-10.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="IRT-V3_files/figure-html/unnamed-chunk-17-11.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="IRT-V3_files/figure-html/unnamed-chunk-17-12.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="IRT-V3_files/figure-html/unnamed-chunk-17-13.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="IRT-V3_files/figure-html/unnamed-chunk-17-14.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="IRT-V3_files/figure-html/unnamed-chunk-17-15.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="IRT-V3_files/figure-html/unnamed-chunk-17-16.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="IRT-V3_files/figure-html/unnamed-chunk-17-17.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="IRT-V3_files/figure-html/unnamed-chunk-17-18.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="IRT-V3_files/figure-html/unnamed-chunk-17-19.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="IRT-V3_files/figure-html/unnamed-chunk-17-20.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="IRT-V3_files/figure-html/unnamed-chunk-17-21.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="IRT-V3_files/figure-html/unnamed-chunk-17-22.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="IRT-V3_files/figure-html/unnamed-chunk-17-23.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="IRT-V3_files/figure-html/unnamed-chunk-17-24.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="IRT-V3_files/figure-html/unnamed-chunk-17-25.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="IRT-V3_files/figure-html/unnamed-chunk-17-26.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="IRT-V3_files/figure-html/unnamed-chunk-17-27.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="IRT-V3_files/figure-html/unnamed-chunk-17-28.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="IRT-V3_files/figure-html/unnamed-chunk-17-29.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="IRT-V3_files/figure-html/unnamed-chunk-17-30.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="IRT-V3_files/figure-html/unnamed-chunk-17-31.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="IRT-V3_files/figure-html/unnamed-chunk-17-32.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="goodness-of-fit-tests" class="level2">
+<h2 class="anchored" data-anchor-id="goodness-of-fit-tests">Goodness-of-Fit Tests</h2>
+<section id="item-fit-statistics" class="level3">
+<h3 class="anchored" data-anchor-id="item-fit-statistics">Item Fit Statistics</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a>item_fit <span class="ot">&lt;-</span> <span class="fu">item.fit</span>(irt.data4)</span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a>item_fit</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Item-Fit Statistics and P-values
+
+Call:
+ltm(formula = data4 ~ z1, IRT.param = TRUE)
+
+Alternative: Items do not fit the model
+Ability Categories: 10
+
+        X^2 Pr(&gt;X^2)
+K1   1.9205   0.9834
+K2   6.4970   0.5917
+K4  12.5475   0.1284
+K6  14.5957   0.0675
+K9   6.9325   0.5439
+K11  8.7585   0.3631
+K12  4.7692   0.7819
+K13  7.9501   0.4384
+K14  4.2047   0.8382
+K15  8.6181   0.3755
+K16  7.9017   0.4431
+K17 12.5467   0.1284
+K18  4.4442    0.815
+K19  8.4835   0.3877
+K20 12.8987   0.1154
+K21  7.5798   0.4756
+K22 10.2685   0.2467
+K23 11.6644   0.1668
+K24  5.2830   0.7269
+K25  3.7088   0.8824
+K26 19.8994   0.0107
+K27 41.9166  &lt;0.0001
+K28 24.7109   0.0017
+K29 22.0305   0.0049
+K30 34.9999  &lt;0.0001
+K31  4.4414   0.8153
+K32 25.8395   0.0011
+K33 19.6277   0.0118
+K34  7.6510   0.4683
+K35 23.3093    0.003
+K36  6.1117   0.6347
+K37 12.7082   0.1223</code></pre>
+</div>
+</div>
+</section>
+<section id="fit-on-the-two-way-margins" class="level3">
+<h3 class="anchored" data-anchor-id="fit-on-the-two-way-margins">Fit on the Two-Way Margins</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a>margins_output <span class="ot">&lt;-</span> <span class="fu">margins</span>(irt.data4)</span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a>margins_output</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+ltm(formula = data4 ~ z1, IRT.param = TRUE)
+
+Fit on the Two-Way Margins
+
+Response: (0,0)
+  Item i Item j Obs   Exp (O-E)^2/E    
+1     15     19  40 71.28     13.73 ***
+2     15     20  38 68.55     13.61 ***
+3     15     18  42 73.46     13.48 ***
+
+Response: (1,0)
+  Item i Item j Obs   Exp (O-E)^2/E    
+1     10     11   8 32.07     18.06 ***
+2     15     20   6  1.51     13.34 ***
+3     22     23   1 15.14     13.21 ***
+
+Response: (0,1)
+  Item i Item j Obs   Exp (O-E)^2/E    
+1     10     11   5 30.29     21.11 ***
+2      5      6   6 27.80     17.10 ***
+3     21     24  10 29.26     12.68 ***
+
+Response: (1,1)
+  Item i Item j Obs   Exp (O-E)^2/E    
+1     10     11  65 28.41     47.10 ***
+2     22     23  47 21.95     28.60 ***
+3      6      7  32 13.32     26.18 ***
+
+'***' denotes a chi-squared residual greater than 3.5 </code></pre>
+</div>
+</div>
+</section>
+<section id="person-fit-statistics" class="level3">
+<h3 class="anchored" data-anchor-id="person-fit-statistics">Person Fit Statistics</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>person_fit <span class="ot">&lt;-</span> <span class="fu">person.fit</span>(irt.data4)</span>
+<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a>person_fit</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Person-Fit Statistics and P-values
+
+Call:
+ltm(formula = data4 ~ z1, IRT.param = TRUE)
+
+Alternative: Inconsistent response pattern under the estimated model
+
+    K1 K2 K4 K6 K9 K11 K12 K13 K14 K15 K16 K17 K18 K19 K20 K21 K22 K23 K24 K25
+1    0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+2    0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+3    0  0  0  0  0   0   0   0   0   0   0   0   0   0   0   0   0   1   1   1
+4    0  0  0  0  0   0   0   0   0   0   0   1   0   0   0   0   0   1   1   1
+5    0  0  0  0  0   0   0   0   1   0   0   0   0   0   0   0   0   0   0   0
+6    0  0  0  0  0   0   0   0   1   0   0   1   0   0   0   0   0   0   0   0
+7    0  0  0  0  0   0   0   1   0   0   0   1   1   0   0   0   0   0   0   0
+8    0  0  0  0  0   0   0   1   0   1   1   0   0   0   0   0   0   0   0   0
+9    0  0  0  0  0   0   0   1   1   0   0   1   1   0   0   0   0   0   0   0
+10   0  0  0  0  0   0   0   1   1   0   0   1   1   1   1   1   1   1   1   1
+11   0  0  0  0  0   0   0   1   1   1   1   1   0   1   1   1   1   1   1   1
+12   0  0  0  0  0   0   0   1   1   1   1   1   0   1   1   1   1   1   1   1
+13   0  0  0  0  0   0   1   1   1   1   1   1   0   1   0   0   0   1   1   1
+14   0  0  0  0  1   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+15   0  0  0  0  1   0   0   0   0   0   0   1   0   0   0   0   0   0   0   0
+16   0  0  0  0  1   0   0   0   0   0   0   1   0   0   0   0   0   0   0   0
+17   0  0  0  0  1   0   0   1   1   0   0   0   0   0   0   0   0   1   1   1
+18   0  0  0  0  1   1   0   1   0   0   0   1   0   0   1   1   1   1   1   0
+19   0  0  0  0  1   1   1   1   0   0   0   1   1   1   1   1   1   1   1   1
+20   0  0  0  0  1   1   1   1   1   1   0   1   1   0   1   1   1   1   1   1
+21   0  0  0  0  1   1   1   1   1   1   1   1   1   1   1   1   1   1   1   1
+22   0  0  0  1  0   0   0   1   0   0   0   0   0   0   0   0   0   0   0   0
+23   0  0  0  1  1   1   1   1   1   0   0   1   0   1   1   1   1   1   1   1
+24   0  1  0  0  0   0   0   0   0   0   0   1   0   0   0   0   1   1   1   1
+25   0  1  0  0  0   0   0   1   1   1   1   1   0   1   0   0   0   1   1   1
+26   0  1  0  0  0   0   0   1   1   1   1   1   1   0   0   0   0   0   0   0
+27   0  1  0  0  1   0   0   0   0   0   0   1   0   0   1   0   0   0   0   0
+28   0  1  0  0  1   0   0   1   1   0   1   1   1   1   1   1   1   1   1   1
+29   0  1  0  0  1   1   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+30   0  1  0  1  0   0   0   1   1   1   1   1   0   1   1   1   1   1   1   1
+31   0  1  1  0  0   0   0   1   0   0   0   1   0   0   0   0   0   1   1   1
+32   0  1  1  0  0   0   0   1   1   1   1   1   1   0   0   0   0   0   0   0
+33   0  1  1  0  0   0   0   1   1   1   1   1   1   1   1   1   1   1   1   1
+34   0  1  1  0  1   1   0   0   0   0   0   1   0   0   0   0   0   0   0   0
+35   1  0  0  0  0   0   0   0   0   0   0   1   0   1   1   1   1   1   1   1
+36   1  0  0  0  0   0   0   0   1   0   0   1   0   0   0   0   0   0   0   0
+37   1  0  0  0  0   0   0   1   0   0   0   0   1   1   1   1   1   1   1   1
+38   1  0  0  0  0   0   0   1   0   0   0   1   0   0   0   0   0   1   0   1
+39   1  0  0  0  0   0   0   1   0   0   0   1   0   1   1   1   1   1   1   1
+40   1  0  0  0  0   0   0   1   0   0   0   1   1   1   1   1   1   1   1   1
+41   1  0  0  0  0   0   0   1   0   1   1   1   1   0   0   0   0   1   1   1
+42   1  0  0  0  0   0   0   1   1   0   0   0   0   0   0   0   0   0   0   0
+43   1  0  0  0  0   0   0   1   1   0   0   1   0   0   0   0   0   0   0   0
+44   1  0  0  0  0   0   0   1   1   0   0   1   0   0   0   0   0   0   0   0
+45   1  0  0  0  0   0   0   1   1   0   0   1   0   0   0   0   0   0   0   0
+46   1  0  0  0  0   0   0   1   1   0   0   1   0   1   1   1   1   0   0   1
+47   1  0  0  0  0   0   0   1   1   0   0   1   0   1   1   1   1   1   1   1
+48   1  0  0  0  0   0   0   1   1   0   0   1   1   0   0   0   0   0   0   1
+49   1  0  0  0  0   0   0   1   1   0   0   1   1   0   0   0   1   1   1   1
+50   1  0  0  0  0   0   0   1   1   0   0   1   1   1   1   1   1   1   1   1
+51   1  0  0  0  0   0   0   1   1   1   0   1   0   1   1   1   1   1   1   1
+52   1  0  0  0  0   0   0   1   1   1   1   1   0   0   0   0   0   1   1   1
+53   1  0  0  0  0   0   0   1   1   1   1   1   0   1   1   1   1   1   1   1
+54   1  0  0  0  0   0   0   1   1   1   1   1   0   1   1   1   1   1   1   1
+55   1  0  0  0  0   0   0   1   1   1   1   1   1   0   0   0   0   0   0   0
+56   1  0  0  0  0   0   0   1   1   1   1   1   1   1   0   0   1   0   0   0
+57   1  0  0  0  0   0   0   1   1   1   1   1   1   1   1   1   1   1   1   1
+58   1  0  0  0  0   0   0   1   1   1   1   1   1   1   1   1   1   1   1   1
+59   1  0  0  0  0   0   0   1   1   1   1   1   1   1   1   1   1   1   1   1
+60   1  0  0  0  0   0   0   1   1   1   1   1   1   1   1   1   1   1   1   1
+61   1  0  0  0  0   0   0   1   1   1   1   1   1   1   1   1   1   1   1   1
+62   1  0  0  0  0   1   0   1   0   0   0   0   1   0   0   0   0   1   1   1
+63   1  0  0  0  0   1   0   1   1   0   0   0   1   1   1   1   1   1   1   1
+64   1  0  0  0  0   1   0   1   1   1   1   1   1   1   1   1   1   1   1   1
+65   1  0  0  0  0   1   1   1   1   1   1   1   1   0   1   1   1   1   1   1
+66   1  0  0  0  1   0   0   1   0   0   0   0   1   0   0   0   0   0   0   0
+67   1  0  0  0  1   0   0   1   0   0   0   1   1   0   0   0   0   1   1   1
+68   1  0  0  0  1   0   0   1   1   0   0   0   1   1   1   1   1   0   0   0
+69   1  0  0  0  1   0   0   1   1   0   0   1   1   1   1   1   1   0   1   1
+70   1  0  0  0  1   0   0   1   1   0   0   1   1   1   1   1   1   1   1   1
+71   1  0  0  0  1   0   0   1   1   0   1   1   1   0   0   0   0   1   1   1
+72   1  0  0  0  1   0   0   1   1   1   0   1   1   1   1   1   1   1   1   1
+73   1  0  0  0  1   0   0   1   1   1   1   1   0   0   0   0   0   1   1   1
+74   1  0  0  0  1   0   0   1   1   1   1   1   0   1   1   1   1   1   1   1
+75   1  0  0  0  1   0   0   1   1   1   1   1   0   1   1   1   1   1   1   1
+76   1  0  0  0  1   0   1   1   0   0   0   0   1   0   0   1   1   1   1   1
+77   1  0  0  0  1   0   1   1   0   1   1   1   1   1   1   1   1   0   0   1
+78   1  0  0  0  1   1   0   0   0   0   0   0   1   1   1   1   1   1   1   1
+79   1  0  0  0  1   1   0   0   0   0   0   1   0   0   0   0   0   1   1   1
+80   1  0  0  0  1   1   0   1   0   0   0   0   0   0   0   0   0   0   0   0
+81   1  0  0  0  1   1   0   1   0   0   0   1   0   0   0   0   0   1   1   1
+82   1  0  0  0  1   1   0   1   0   0   0   1   0   0   0   0   0   1   1   1
+83   1  0  0  0  1   1   0   1   0   0   0   1   1   1   1   1   1   0   0   0
+84   1  0  0  0  1   1   0   1   0   0   0   1   1   1   1   1   1   1   1   1
+85   1  0  0  0  1   1   0   1   1   0   0   1   0   1   1   1   1   1   1   1
+86   1  0  0  0  1   1   0   1   1   0   0   1   1   1   1   1   1   1   1   1
+87   1  0  0  0  1   1   0   1   1   0   0   1   1   1   1   1   1   1   1   1
+88   1  0  0  0  1   1   0   1   1   0   0   1   1   1   1   1   1   1   1   1
+89   1  0  0  0  1   1   0   1   1   0   1   1   1   0   0   0   0   1   1   1
+90   1  0  0  0  1   1   0   1   1   1   1   1   1   1   1   1   1   1   1   1
+91   1  0  0  0  1   1   1   0   0   0   0   0   1   0   1   0   1   0   0   0
+92   1  0  0  0  1   1   1   0   0   0   0   1   1   1   1   1   1   1   1   1
+93   1  0  0  0  1   1   1   0   1   0   0   1   1   1   1   1   1   1   1   1
+94   1  0  0  0  1   1   1   1   0   0   0   1   0   0   0   0   0   0   1   1
+95   1  0  0  0  1   1   1   1   0   0   0   1   1   0   0   0   0   1   1   1
+96   1  0  0  0  1   1   1   1   0   0   0   1   1   1   1   1   1   1   1   1
+97   1  0  0  0  1   1   1   1   1   0   0   1   0   1   1   1   1   1   1   1
+98   1  0  0  0  1   1   1   1   1   1   1   1   1   1   1   1   1   1   1   1
+99   1  0  0  1  1   1   1   1   0   0   0   1   1   1   1   1   1   0   1   1
+100  1  0  0  1  1   1   1   1   1   0   0   1   1   1   1   1   1   1   1   1
+101  1  0  1  0  0   0   0   0   1   0   0   1   0   0   0   0   0   0   0   0
+102  1  0  1  0  0   0   0   0   1   0   0   1   0   0   0   1   0   0   1   1
+103  1  0  1  0  0   0   0   1   0   0   0   1   0   0   0   0   0   0   0   0
+104  1  0  1  0  0   0   0   1   1   0   0   1   0   0   0   0   0   0   0   0
+105  1  0  1  0  0   0   0   1   1   0   0   1   1   0   0   0   0   1   1   1
+106  1  0  1  0  0   0   0   1   1   0   0   1   1   1   1   1   1   1   1   1
+107  1  0  1  0  0   0   0   1   1   1   1   1   0   0   0   0   0   1   1   1
+108  1  0  1  0  0   0   0   1   1   1   1   1   0   1   1   1   1   0   0   1
+109  1  0  1  0  0   0   0   1   1   1   1   1   1   1   1   1   1   1   1   1
+110  1  0  1  0  0   1   0   1   0   0   0   1   0   0   0   0   1   0   0   0
+111  1  0  1  0  1   0   0   0   0   0   0   1   0   1   1   1   1   1   1   1
+112  1  0  1  0  1   1   0   1   0   0   0   1   1   1   1   1   1   1   1   1
+113  1  0  1  0  1   1   0   1   1   0   0   0   0   0   0   0   0   0   0   0
+114  1  0  1  0  1   1   1   1   0   0   0   1   1   1   1   1   1   1   1   1
+115  1  0  1  0  1   1   1   1   1   1   1   1   1   1   1   1   1   1   1   1
+116  1  0  1  1  1   0   0   0   1   0   0   1   0   1   1   1   1   1   1   1
+117  1  0  1  1  1   0   0   1   1   0   0   1   1   1   1   1   1   1   1   1
+118  1  0  1  1  1   0   0   1   1   1   0   1   1   1   1   1   1   1   1   1
+119  1  0  1  1  1   0   0   1   1   1   1   1   1   1   1   1   1   1   1   1
+120  1  0  1  1  1   1   1   1   1   1   1   1   1   0   0   0   0   1   1   1
+121  1  1  0  0  0   0   0   0   1   0   0   1   0   0   0   0   0   0   0   0
+122  1  1  0  0  0   0   0   1   0   0   0   1   1   1   1   1   1   1   1   1
+123  1  1  0  0  0   0   0   1   1   0   0   0   0   0   0   0   0   0   0   0
+124  1  1  0  0  0   0   0   1   1   0   0   1   1   0   0   0   1   0   1   1
+125  1  1  0  0  0   0   0   1   1   1   1   1   0   1   1   1   1   1   1   1
+126  1  1  0  0  0   0   0   1   1   1   1   1   1   1   1   1   1   1   1   1
+127  1  1  0  0  0   0   0   1   1   1   1   1   1   1   1   1   1   1   1   1
+128  1  1  0  0  0   0   1   1   1   1   1   1   1   1   1   1   1   1   1   1
+129  1  1  0  0  1   0   0   1   1   0   0   1   0   0   0   0   1   0   0   0
+130  1  1  0  0  1   0   0   1   1   1   0   1   1   0   0   0   0   1   1   1
+131  1  1  0  0  1   0   0   1   1   1   1   1   1   1   1   1   1   1   1   1
+132  1  1  0  0  1   0   1   0   0   0   0   1   1   0   0   0   0   0   0   0
+133  1  1  0  0  1   0   1   1   1   0   1   1   1   1   0   0   0   1   1   1
+134  1  1  0  0  1   1   0   1   1   0   0   1   1   0   0   1   1   1   1   1
+135  1  1  0  0  1   1   0   1   1   1   1   1   1   1   1   1   1   1   1   1
+136  1  1  0  0  1   1   1   0   0   0   0   0   0   0   0   0   0   0   0   0
+137  1  1  0  1  0   0   0   1   1   1   1   1   1   1   1   1   1   1   1   1
+138  1  1  1  0  0   0   0   1   1   0   0   1   0   0   0   0   0   1   1   1
+139  1  1  1  0  0   0   0   1   1   1   1   1   0   0   0   0   0   0   0   0
+140  1  1  1  0  0   0   0   1   1   1   1   1   0   1   1   1   1   1   1   1
+141  1  1  1  0  0   0   0   1   1   1   1   1   1   1   1   1   1   1   1   1
+142  1  1  1  0  0   0   0   1   1   1   1   1   1   1   1   1   1   1   1   1
+143  1  1  1  0  0   1   0   1   1   1   1   1   0   1   1   1   1   1   1   1
+144  1  1  1  0  1   0   0   1   1   1   1   1   1   0   0   0   0   0   0   0
+145  1  1  1  0  1   0   0   1   1   1   1   1   1   1   1   1   1   1   1   1
+146  1  1  1  0  1   0   0   1   1   1   1   1   1   1   1   1   1   1   1   1
+147  1  1  1  0  1   0   0   1   1   1   1   1   1   1   1   1   1   1   1   1
+148  1  1  1  0  1   0   1   1   1   0   1   1   1   1   1   1   1   1   1   1
+149  1  1  1  0  1   1   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+150  1  1  1  0  1   1   0   0   0   0   0   1   0   0   0   0   0   0   0   0
+151  1  1  1  0  1   1   0   1   0   0   0   1   0   0   0   0   0   1   1   1
+152  1  1  1  0  1   1   0   1   0   0   0   1   1   1   1   1   1   1   1   1
+153  1  1  1  0  1   1   1   0   0   0   0   0   1   0   0   0   0   1   1   1
+154  1  1  1  0  1   1   1   0   0   1   0   1   1   1   1   1   1   1   1   1
+155  1  1  1  0  1   1   1   1   1   0   0   0   1   0   0   0   0   1   1   1
+156  1  1  1  0  1   1   1   1   1   0   0   1   1   0   0   0   0   1   1   1
+157  1  1  1  0  1   1   1   1   1   1   1   1   1   1   1   1   1   1   1   1
+158  1  1  1  1  0   0   0   1   1   0   0   1   1   0   1   0   0   0   0   0
+159  1  1  1  1  0   0   0   1   1   1   1   1   0   1   1   1   1   1   1   1
+160  1  1  1  1  0   0   0   1   1   1   1   1   1   0   0   0   0   1   1   1
+161  1  1  1  1  0   0   1   1   1   1   0   1   0   1   1   1   1   1   1   1
+162  1  1  1  1  0   0   1   1   1   1   1   1   1   1   1   1   1   1   1   1
+163  1  1  1  1  1   0   0   0   1   0   0   1   1   0   1   1   1   1   1   1
+164  1  1  1  1  1   0   0   1   1   1   0   1   1   1   1   1   1   1   1   1
+165  1  1  1  1  1   0   1   1   0   1   1   1   1   0   0   1   1   1   1   1
+166  1  1  1  1  1   1   0   1   0   0   0   1   1   0   0   0   0   1   1   1
+167  1  1  1  1  1   1   0   1   1   1   1   1   1   1   1   1   1   1   1   1
+168  1  1  1  1  1   1   1   1   0   0   0   1   1   1   1   1   1   1   1   1
+169  1  1  1  1  1   1   1   1   1   1   1   1   1   1   1   1   1   1   1   1
+170  1  1  1  1  1   1   1   1   1   1   1   1   1   1   1   1   1   1   1   1
+171  1  1  1  1  1   1   1   1   1   1   1   1   1   1   1   1   1   1   1   1
+    K26 K27 K28 K29 K30 K31 K32 K33 K34 K35 K36 K37       L0      Lz Pr(&lt;Lz)
+1     0   0   0   0   0   0   0   0   0   0   0   0  -2.9555  1.5286  0.9368
+2     1   0   0   0   0   0   0   0   0   1   0   0  -6.8565  0.5187   0.698
+3     0   0   0   0   0   1   1   1   1   0   1   1 -15.7033  0.4422  0.6708
+4     0   0   0   0   0   1   1   0   1   0   1   1 -14.0492  1.0770  0.8593
+5     0   0   0   0   0   0   0   0   1   0   1   1  -7.9773  1.3104   0.905
+6     1   0   0   0   0   1   0   0   1   0   1   1 -10.0676  1.2331  0.8912
+7     0   0   0   0   0   1   1   1   1   0   1   1 -10.8619  1.4191  0.9221
+8     0   0   0   0   0   0   0   0   0   0   0   0 -11.5122 -0.7584  0.2241
+9     0   0   1   0   0   0   0   0   1   1   1   1 -11.2134  0.7186  0.7638
+10    1   1   1   0   0   1   1   1   1   1   1   0 -14.6706 -0.5973  0.2752
+11    0   0   0   0   0   1   1   1   1   1   1   1 -12.4867  0.3930  0.6529
+12    1   0   1   1   0   1   1   1   1   0   1   1 -11.1699  0.5254  0.7003
+13    0   1   1   1   1   1   1   1   1   0   1   1 -22.1419 -2.1058  0.0176
+14    0   0   0   0   0   0   0   0   1   0   1   0  -7.2500  1.2471  0.8938
+15    0   0   0   0   0   1   1   1   1   1   1   1 -12.1443  0.8016  0.7886
+16    0   0   1   1   0   0   0   0   1   1   1   1 -12.2101  0.1385  0.5551
+17    1   0   0   0   0   1   1   1   1   0   1   0 -15.6560  0.4555  0.6756
+18    1   0   1   1   0   1   0   0   0   1   1   1 -21.7606 -1.9806  0.0238
+19    1   0   1   1   0   1   1   1   1   1   1   1 -12.5574 -0.0167  0.4933
+20    1   0   0   1   1   1   1   1   1   0   1   1 -15.4770 -0.7952  0.2133
+21    1   1   1   1   1   1   1   1   1   0   1   1  -9.7621 -0.0218  0.4913
+22    0   0   0   0   0   0   0   0   0   0   0   0  -8.9249 -0.0926  0.4631
+23    1   1   1   1   1   1   1   1   1   0   1   1 -15.1293 -1.8572  0.0316
+24    1   0   1   1   0   1   1   1   0   0   1   1 -17.4655 -0.2608  0.3971
+25    1   1   1   1   1   1   1   1   1   0   1   1 -21.0920 -1.7063   0.044
+26    1   1   1   1   0   1   1   1   1   1   1   1 -17.8364 -0.8482  0.1982
+27    0   0   0   0   0   0   0   0   1   0   1   1 -15.7022 -0.7634  0.2226
+28    0   0   0   0   0   1   1   1   1   0   1   1 -11.5972  0.6915  0.7554
+29    1   0   0   0   0   0   0   0   0   1   0   0 -10.7006 -0.6808   0.248
+30    0   0   0   0   0   1   1   1   1   0   1   0 -17.3780 -1.4327   0.076
+31    0   0   0   0   0   1   1   0   1   0   1   1 -14.0258  1.0792  0.8597
+32    0   0   0   0   0   0   0   0   0   1   1   1 -15.9535 -1.0877  0.1384
+33    1   1   1   1   1   1   1   0   1   0   1   1 -13.9949 -1.3532   0.088
+34    0   0   0   0   0   0   0   0   0   1   0   0 -12.0367 -0.9385   0.174
+35    1   0   0   1   0   1   1   1   1   1   1   1 -12.0895  0.6817  0.7523
+36    0   0   0   0   0   0   0   0   1   1   1   1  -8.3200  1.5484  0.9392
+37    1   1   1   1   1   1   1   0   1   0   1   1 -16.6800 -1.4945  0.0675
+38    1   0   0   0   0   1   0   0   1   0   1   0 -13.8766  1.0673  0.8571
+39    1   1   1   0   0   1   1   1   0   0   1   1 -14.1166 -0.1948  0.4228
+40    1   0   1   1   0   1   1   1   1   0   1   1  -9.2435  1.4174  0.9218
+41    0   0   0   0   0   0   0   0   1   1   1   1 -16.0725  0.3055    0.62
+42    0   0   0   0   0   0   0   0   0   0   1   1  -7.5112  1.5561  0.9402
+43    0   0   0   0   0   0   0   0   0   0   0   0  -7.5548  1.0671   0.857
+44    1   0   0   0   0   1   0   0   1   1   1   1  -8.9235  1.8831  0.9702
+45    1   0   1   1   0   0   0   0   1   1   1   1 -11.1924  0.8944  0.8144
+46    0   0   0   0   0   1   1   0   0   0   1   1 -18.6151 -0.7304  0.2326
+47    0   0   0   0   0   1   0   1   1   0   1   1 -11.9098  1.1205  0.8687
+48    0   0   0   0   0   1   1   1   1   0   1   1 -11.1255  2.1591  0.9846
+49    0   0   0   0   0   1   1   1   0   0   1   1 -12.5427  1.6180  0.9472
+50    0   0   0   0   0   1   1   0   1   1   1   1 -10.6862  1.3487  0.9113
+51    0   0   1   1   0   1   1   1   1   1   1   1  -9.9950  1.0977  0.8638
+52    1   1   1   1   1   1   1   1   1   1   1   1 -18.4103 -0.6470  0.2588
+53    0   0   0   0   0   1   1   1   1   0   1   1 -10.5183  1.1003  0.8644
+54    1   1   1   1   0   1   1   1   1   0   1   1  -9.4545  0.9111  0.8189
+55    1   0   0   0   0   0   0   0   1   1   1   1 -12.6086  0.4538   0.675
+56    0   0   0   0   0   0   0   0   1   0   1   0 -18.5213 -1.3429  0.0897
+57    0   0   0   0   0   1   1   1   1   0   1   1  -9.6890  1.2608  0.8963
+58    1   0   1   0   0   1   1   1   1   1   1   1  -8.7669  1.3419  0.9102
+59    1   0   1   1   0   1   1   1   1   0   1   1  -7.8044  1.6621  0.9518
+60    1   1   1   1   1   1   0   1   1   1   1   1 -13.3360 -0.8613  0.1945
+61    1   1   1   1   1   1   1   1   1   1   1   1  -7.0385  1.3099  0.9049
+62    0   0   0   0   0   1   1   1   1   0   1   1 -13.5586  1.2497  0.8943
+63    0   0   0   1   0   1   0   0   1   0   1   1 -15.4023 -0.2427  0.4041
+64    1   0   0   0   0   1   1   1   1   0   1   0 -12.5420  0.1851  0.5734
+65    0   1   1   1   0   1   1   1   1   1   1   1 -13.9798 -0.4483   0.327
+66    1   0   0   1   0   0   0   0   0   0   0   0 -12.5300 -0.7028  0.2411
+67    1   1   1   1   1   1   1   1   1   0   1   1 -16.7646 -0.0072  0.4971
+68    0   0   0   1   0   1   0   0   0   0   0   0 -29.4866 -4.9455 &lt;0.0001
+69    0   0   0   0   0   0   1   1   1   0   1   1 -14.9010  0.1757  0.5697
+70    1   1   1   1   0   1   1   1   1   0   1   1  -8.3723  1.4541   0.927
+71    0   0   0   0   0   1   1   0   1   1   1   1 -11.8869  1.8815    0.97
+72    1   0   0   1   0   1   1   1   1   0   1   1  -7.9645  1.7791  0.9624
+73    1   0   1   1   0   1   0   0   1   0   1   1 -14.2381  0.9857  0.8379
+74    0   0   0   0   0   1   1   1   1   0   1   1 -10.3176  1.1374  0.8723
+75    1   0   1   1   0   1   1   1   1   1   1   1  -8.8545  1.2795  0.8996
+76    1   1   1   1   0   1   1   1   1   0   1   0 -18.7656 -1.3720   0.085
+77    1   0   1   1   0   1   1   1   1   0   1   1 -20.7455 -1.6358  0.0509
+78    1   0   1   1   0   1   1   1   1   1   1   1 -14.6653 -0.5009  0.3082
+79    1   0   0   1   0   1   1   1   0   0   1   1 -15.0649  0.6736  0.7497
+80    0   0   1   1   0   0   0   0   1   0   1   0 -12.5088 -0.1519  0.4396
+81    1   0   0   0   0   1   1   1   0   0   1   1 -13.3224  1.3395  0.9098
+82    1   0   1   1   0   1   1   1   1   0   1   1 -12.4793  1.6478  0.9503
+83    1   0   0   1   0   1   1   1   1   0   1   1 -19.6536 -1.0633  0.1438
+84    1   0   1   1   0   1   1   1   1   1   1   1  -9.5853  1.1556  0.8761
+85    0   0   0   0   0   0   0   0   1   0   1   1 -15.9285 -0.2564  0.3988
+86    0   0   0   0   0   1   1   1   1   0   1   1  -9.5913  1.4995  0.9331
+87    1   0   0   0   0   1   1   1   1   1   1   1  -9.1263  1.5242  0.9363
+88    1   1   1   1   0   1   1   1   1   1   1   1  -8.6890  1.2419  0.8929
+89    1   1   1   1   1   1   1   1   1   1   1   1 -18.1746 -0.5608  0.2875
+90    1   1   1   1   0   1   1   1   1   1   1   1  -7.1370  1.6040  0.9456
+91    1   0   1   0   0   1   1   1   0   0   1   0 -23.4055 -2.8951  0.0019
+92    1   0   1   1   0   1   1   1   1   1   1   0 -15.8705 -1.0626   0.144
+93    1   1   1   1   1   1   1   1   1   0   1   1 -12.5985 -0.7488   0.227
+94    1   0   0   1   0   1   1   1   1   0   1   1 -14.2354  1.0037  0.8422
+95    1   0   0   1   0   1   1   1   1   0   1   1 -13.2484  1.3512  0.9117
+96    1   0   0   0   0   1   1   1   1   0   1   1 -11.1003  0.8134   0.792
+97    1   0   1   1   0   1   1   1   0   0   1   1 -13.1661 -0.0519  0.4793
+98    1   1   1   1   0   1   1   1   1   0   1   1  -7.6534  1.2790  0.8995
+99    0   0   0   0   0   1   1   1   1   0   1   1 -17.1213 -0.9413  0.1733
+100   0   0   0   1   0   1   1   0   1   0   1   1 -13.5922 -0.1457  0.4421
+101   0   0   0   0   0   1   0   0   1   0   1   1  -9.8987  1.3409    0.91
+102   0   0   0   0   0   0   1   1   1   0   1   1 -16.1746  0.0879   0.535
+103   0   1   1   0   0   0   0   0   1   0   1   1 -13.1883 -0.0103  0.4959
+104   1   0   0   0   0   1   0   0   1   1   1   1  -9.9945  1.5074  0.9341
+105   1   1   1   1   0   1   1   1   1   1   1   1 -14.2830  0.9448  0.8276
+106   1   1   1   1   1   1   1   1   1   0   1   1  -9.5602  0.6334  0.7368
+107   0   0   0   0   0   1   1   1   1   0   1   1 -12.9262  1.4783  0.9303
+108   0   0   0   0   0   1   1   1   1   0   1   1 -18.8352 -0.8593  0.1951
+109   0   0   0   0   0   1   0   1   1   1   1   1 -13.0956  0.2329  0.5921
+110   0   0   0   0   0   0   0   0   1   0   1   1 -13.1663  0.2400  0.5948
+111   0   0   0   1   0   1   1   1   1   0   1   1 -12.8088  0.4464  0.6724
+112   1   1   1   1   0   1   1   1   1   0   1   1 -10.3875  0.5961  0.7245
+113   1   0   1   1   0   1   1   1   0   0   1   1 -15.8164 -0.3996  0.3447
+114   1   0   0   1   0   1   1   1   1   1   1   1 -11.1530  0.5185  0.6979
+115   1   1   1   1   1   1   1   0   1   1   1   1 -10.7642 -0.3741  0.3542
+116   0   0   0   1   0   1   1   1   1   0   1   1 -13.7185 -0.0993  0.4604
+117   1   1   1   1   1   1   1   1   1   1   1   1  -9.4370  0.3481  0.6361
+118   1   1   1   1   0   1   1   1   1   1   1   1  -8.5789  0.9320  0.8243
+119   1   1   1   1   1   1   1   1   1   1   1   1  -5.8963  1.2253  0.8898
+120   1   1   1   1   0   1   1   1   1   1   1   1 -20.4703 -1.4504  0.0735
+121   0   0   0   0   0   0   0   0   1   1   1   1  -9.3048  1.2021  0.8853
+122   1   0   1   0   0   1   1   1   1   0   1   1 -10.1300  1.1789  0.8808
+123   0   0   0   0   0   0   0   0   0   0   1   0  -8.4387  0.9914  0.8393
+124   1   0   1   1   0   1   1   1   1   1   1   1 -13.5298  1.2461  0.8936
+125   0   0   0   0   0   1   1   1   1   0   1   1 -10.9529  0.8889   0.813
+126   1   1   1   1   0   1   1   1   1   1   1   1  -7.6084  1.4501  0.9265
+127   1   1   1   1   1   1   1   1   1   1   1   1  -6.9224  1.2567  0.8956
+128   1   1   1   1   0   1   1   1   1   0   1   1  -8.1576  1.1181  0.8682
+129   0   0   0   0   0   1   0   0   1   0   1   1 -11.4982  1.2065  0.8862
+130   1   0   0   1   0   0   1   0   1   0   1   1 -14.2100  0.9991  0.8411
+131   1   0   0   1   0   1   1   0   1   1   1   1 -10.4237  0.8353  0.7982
+132   1   0   0   0   0   1   0   0   1   0   1   1 -12.9402  0.3586    0.64
+133   0   0   0   0   0   1   1   1   1   0   0   0 -20.8168 -1.5418  0.0616
+134   0   0   0   0   0   0   0   0   1   1   1   1 -15.6764  0.1308   0.552
+135   1   0   0   1   0   1   1   1   1   0   1   1  -8.5647  1.3491  0.9113
+136   1   0   0   1   0   0   0   0   1   1   1   1 -15.3432 -1.0461  0.1478
+137   1   1   1   1   1   1   1   1   1   1   1   1  -7.0343  0.8990  0.8157
+138   0   0   0   0   0   0   0   0   1   1   1   1 -15.2646  0.6209  0.7327
+139   0   0   0   0   0   0   0   0   1   1   1   1 -13.4327  0.0025   0.501
+140   0   0   0   0   0   1   1   1   1   1   1   1 -11.6001  0.5265  0.7007
+141   0   0   0   0   0   1   1   1   1   1   1   1 -10.6288  0.7349  0.7688
+142   1   1   1   1   1   1   1   1   1   1   1   1  -6.5576  1.2538   0.895
+143   1   1   0   1   0   1   1   1   1   1   1   1 -10.7665  0.2748  0.6083
+144   0   0   0   0   0   0   0   0   1   1   1   1 -14.2760 -0.1745  0.4307
+145   0   0   0   0   0   1   1   1   1   0   1   1 -10.2646  0.8831  0.8114
+146   0   0   0   0   0   1   1   1   1   1   1   1 -10.3494  0.8030   0.789
+147   1   1   1   1   1   1   1   1   1   1   1   1  -5.7384  1.5070  0.9341
+148   1   0   1   1   0   1   1   1   1   1   1   1  -9.0077  1.0147  0.8449
+149   0   0   0   0   0   0   0   0   0   1   0   0 -11.1544 -0.7562  0.2248
+150   1   0   0   1   0   1   0   0   0   1   1   0 -15.9905 -1.0907  0.1377
+151   0   0   0   0   0   1   1   1   1   0   1   1 -13.0397  1.4425  0.9254
+152   1   0   1   1   0   1   1   1   1   1   1   1 -10.3070  0.7551  0.7749
+153   1   0   1   1   0   0   0   0   1   1   1   1 -22.3652 -2.1057  0.0176
+154   1   1   1   1   1   1   1   1   1   0   1   1 -13.3231 -1.3704  0.0853
+155   1   0   1   0   0   1   1   1   0   0   1   1 -18.4311 -0.6222  0.2669
+156   1   0   0   0   0   1   1   1   1   1   1   1 -14.2436  0.9682  0.8335
+157   1   1   1   1   1   1   1   1   1   1   1   1  -5.0552  1.3909  0.9179
+158   1   1   1   1   0   1   0   0   1   0   1   1 -19.9077 -1.5984   0.055
+159   0   0   0   0   0   1   1   1   1   1   1   1 -13.2321 -0.2422  0.4043
+160   0   0   0   0   0   1   1   1   1   0   1   1 -15.7252  0.4002  0.6555
+161   0   0   0   0   0   1   1   1   0   0   1   1 -16.6804 -1.2905  0.0984
+162   1   0   0   1   1   1   1   1   1   1   1   1 -10.1635 -0.0612  0.4756
+163   1   0   0   1   0   1   1   1   1   0   1   1 -14.2025 -0.0140  0.4944
+164   0   0   0   0   0   1   1   0   0   0   1   1 -15.9984 -0.8905  0.1866
+165   1   0   0   1   0   1   0   1   1   1   1   1 -18.4916 -1.3376  0.0905
+166   1   1   1   1   0   1   1   0   1   0   1   1 -18.3919 -0.6202  0.2676
+167   1   0   0   1   0   1   1   1   1   1   1   1  -9.7432  0.5864  0.7212
+168   1   0   1   1   1   1   1   0   1   0   1   1 -16.0237 -1.8676  0.0309
+169   1   0   1   0   0   1   1   0   1   1   1   1 -13.9018 -1.0102  0.1562
+170   1   1   1   1   1   1   1   1   1   0   1   1  -5.1921  1.1048  0.8654
+171   1   1   1   1   1   1   1   1   1   1   1   1  -4.3470  1.3294  0.9081</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="unidimensionality" class="level2">
+<h2 class="anchored" data-anchor-id="unidimensionality">Unidimensionality</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">2025</span>)</span>
+<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a><span class="fu">unidimTest</span>(irt.data4)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in optimise(f, interval = c(-maxcor, maxcor)): NA/NaN replaced by
+maximum positive value
+Warning in optimise(f, interval = c(-maxcor, maxcor)): NA/NaN replaced by
+maximum positive value
+Warning in optimise(f, interval = c(-maxcor, maxcor)): NA/NaN replaced by
+maximum positive value
+Warning in optimise(f, interval = c(-maxcor, maxcor)): NA/NaN replaced by
+maximum positive value
+Warning in optimise(f, interval = c(-maxcor, maxcor)): NA/NaN replaced by
+maximum positive value
+Warning in optimise(f, interval = c(-maxcor, maxcor)): NA/NaN replaced by
+maximum positive value
+Warning in optimise(f, interval = c(-maxcor, maxcor)): NA/NaN replaced by
+maximum positive value</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Unidimensionality Check using Modified Parallel Analysis
+
+Call:
+ltm(formula = data4 ~ z1, IRT.param = TRUE)
+
+Matrix of tertachoric correlations
+         K1      K2      K4     K6      K9     K11     K12     K13     K14
+K1   1.0000  0.1031  0.4906 0.2265  0.2599  0.2971  0.2206  0.4501  0.3033
+K2   0.1031  1.0000  0.6763 0.4783  0.1276  0.0061  0.1925  0.0064  0.2199
+K4   0.4906  0.6763  1.0000 0.6609  0.1728  0.1437  0.1932  0.0812  0.2110
+K6   0.2265  0.4783  0.6609 1.0000  0.3057  0.1841  0.4699  0.3211  0.2990
+K9   0.2599  0.1276  0.1728 0.3057  1.0000  0.8115  0.6697 -0.1631 -0.3353
+K11  0.2971  0.0061  0.1437 0.1841  0.8115  1.0000  0.7140 -0.0350 -0.3954
+K12  0.2206  0.1925  0.1932 0.4699  0.6697  0.7140  1.0000  0.0418 -0.1473
+K13  0.4501  0.0064  0.0812 0.3211 -0.1631 -0.0350  0.0418  1.0000  0.6284
+K14  0.3033  0.2199  0.2110 0.2990 -0.3353 -0.3954 -0.1473  0.6284  1.0000
+K15  0.1630  0.4160  0.3404 0.3717 -0.2441 -0.2723  0.1244  0.7623  0.7494
+K16  0.1333  0.4238  0.2723 0.2312 -0.2254 -0.2732  0.1122  0.9878  0.7674
+K17  0.3337  0.2400  0.3603 0.3976 -0.0460 -0.1385  0.0785  0.4918  0.5322
+K18  0.5073  0.2396  0.1814 0.3397  0.3991  0.2984  0.5404  0.5642  0.2356
+K19  0.3787  0.0622  0.1082 0.3501  0.1078  0.0700  0.2418  0.5414  0.4859
+K20  0.3572  0.0575  0.1448 0.4535  0.1939  0.1831  0.2577  0.4154  0.4167
+K21  0.4152  0.0433  0.1699 0.4459  0.2108  0.1699  0.2947  0.4742  0.4288
+K22  0.4231  0.0722  0.0893 0.3993  0.1718  0.1682  0.2823  0.4774  0.3973
+K23  0.3324  0.1607  0.2018 0.4028  0.2291  0.2930  0.3612  0.5194  0.2882
+K24  0.3805  0.1438  0.1904 0.4697  0.2742  0.3342  0.4535  0.5169  0.3120
+K25  0.4794  0.0782  0.1788 0.4370  0.1941  0.2289  0.4915  0.5631  0.3387
+K26  0.2572  0.0624 -0.0007 0.1559  0.4483  0.4993  0.5484  0.1521 -0.1336
+K27  0.1441  0.0814  0.2610 0.3437  0.0218  0.1312  0.2893  0.5150  0.3922
+K28  0.0947 -0.0433  0.0612 0.1653  0.1835  0.2497  0.3909  0.3308  0.0659
+K29  0.3009 -0.0076  0.0723 0.3142  0.4976  0.4423  0.4988  0.1510 -0.0390
+K30 -0.0036  0.2371  0.3302 0.4502  0.1404  0.1693  0.4622  0.3568  0.4195
+K31  0.3301 -0.0195  0.1544 0.5053  0.2050  0.2110  0.5065  0.4738  0.2613
+K32  0.2520  0.0409  0.1270 0.3859  0.2714  0.2660  0.4720  0.4463  0.2367
+K33  0.2815 -0.0766  0.0708 0.1745  0.1684  0.1960  0.3911  0.3773  0.2328
+K34  0.2945  0.0139  0.1057 0.1356  0.0204 -0.0879  0.2019  0.3240  0.3647
+K35  0.1579  0.3472  0.3808 0.0978  0.0207  0.0857 -0.0236  0.0055  0.2754
+K36  0.4942  0.0200  0.2601 0.1615 -0.0184  0.1176  0.2899  0.4100  0.4924
+K37  0.4216  0.1460  0.4299 0.2200 -0.0166  0.0381  0.1515  0.3825  0.4505
+        K15     K16     K17    K18    K19    K20    K21    K22    K23    K24
+K1   0.1630  0.1333  0.3337 0.5073 0.3787 0.3572 0.4152 0.4231 0.3324 0.3805
+K2   0.4160  0.4238  0.2400 0.2396 0.0622 0.0575 0.0433 0.0722 0.1607 0.1438
+K4   0.3404  0.2723  0.3603 0.1814 0.1082 0.1448 0.1699 0.0893 0.2018 0.1904
+K6   0.3717  0.2312  0.3976 0.3397 0.3501 0.4535 0.4459 0.3993 0.4028 0.4697
+K9  -0.2441 -0.2254 -0.0460 0.3991 0.1078 0.1939 0.2108 0.1718 0.2291 0.2742
+K11 -0.2723 -0.2732 -0.1385 0.2984 0.0700 0.1831 0.1699 0.1682 0.2930 0.3342
+K12  0.1244  0.1122  0.0785 0.5404 0.2418 0.2577 0.2947 0.2823 0.3612 0.4535
+K13  0.7623  0.9878  0.4918 0.5642 0.5414 0.4154 0.4742 0.4774 0.5194 0.5169
+K14  0.7494  0.7674  0.5322 0.2356 0.4859 0.4167 0.4288 0.3973 0.2882 0.3120
+K15  1.0000  0.9728  0.7026 0.3229 0.6019 0.5367 0.5574 0.5218 0.5274 0.4796
+K16  0.9728  1.0000  0.6879 0.3556 0.5665 0.4315 0.4538 0.4157 0.4996 0.4515
+K17  0.7026  0.6879  1.0000 0.3028 0.5960 0.5545 0.5616 0.5467 0.5414 0.5796
+K18  0.3229  0.3556  0.3028 1.0000 0.4914 0.5311 0.5443 0.5642 0.5077 0.5479
+K19  0.6019  0.5665  0.5960 0.4914 1.0000 0.9816 0.9786 0.9694 0.7508 0.7752
+K20  0.5367  0.4315  0.5545 0.5311 0.9816 1.0000 0.9922 0.9856 0.7134 0.7322
+K21  0.5574  0.4538  0.5616 0.5443 0.9786 0.9922 1.0000 0.9936 0.7797 0.8299
+K22  0.5218  0.4157  0.5467 0.5642 0.9694 0.9856 0.9936 1.0000 0.7131 0.7543
+K23  0.5274  0.4996  0.5414 0.5077 0.7508 0.7134 0.7797 0.7131 1.0000 0.9945
+K24  0.4796  0.4515  0.5796 0.5479 0.7752 0.7322 0.8299 0.7543 0.9945 1.0000
+K25  0.5230  0.4974  0.6190 0.5564 0.8427 0.7572 0.8616 0.7719 0.9874 0.9940
+K26  0.1159  0.0706  0.1709 0.5052 0.2384 0.3178 0.2979 0.2838 0.4604 0.4251
+K27  0.4635  0.4583  0.4314 0.5153 0.4685 0.4397 0.4301 0.3703 0.6118 0.5798
+K28  0.2274  0.2405  0.1876 0.4455 0.3973 0.4235 0.3759 0.3976 0.4829 0.4731
+K29  0.2404  0.1551  0.1976 0.4516 0.4014 0.4496 0.4657 0.4358 0.5247 0.5415
+K30  0.5384  0.5147  0.4279 0.5196 0.5826 0.4998 0.4923 0.4462 0.9822 0.9799
+K31  0.3622  0.3911  0.6064 0.4993 0.7811 0.7968 0.7597 0.7560 0.8467 0.8198
+K32  0.4176  0.3871  0.5603 0.5450 0.7622 0.7221 0.7299 0.6876 0.8350 0.8935
+K33  0.4375  0.4430  0.5150 0.4221 0.6726 0.6435 0.6827 0.6590 0.7492 0.8303
+K34  0.4694  0.6081  0.6775 0.5226 0.5095 0.4181 0.4831 0.3648 0.5402 0.5796
+K35  0.3522  0.4340  0.3313 0.2831 0.0972 0.1223 0.1789 0.1218 0.1216 0.0933
+K36  0.4908  0.3076  0.7649 0.4046 0.4695 0.6262 0.6312 0.6609 0.7552 0.7756
+K37  0.4197  0.3194  0.7716 0.3363 0.3868 0.4733 0.4809 0.4061 0.5697 0.6570
+        K25     K26    K27     K28     K29     K30     K31     K32     K33
+K1   0.4794  0.2572 0.1441  0.0947  0.3009 -0.0036  0.3301  0.2520  0.2815
+K2   0.0782  0.0624 0.0814 -0.0433 -0.0076  0.2371 -0.0195  0.0409 -0.0766
+K4   0.1788 -0.0007 0.2610  0.0612  0.0723  0.3302  0.1544  0.1270  0.0708
+K6   0.4370  0.1559 0.3437  0.1653  0.3142  0.4502  0.5053  0.3859  0.1745
+K9   0.1941  0.4483 0.0218  0.1835  0.4976  0.1404  0.2050  0.2714  0.1684
+K11  0.2289  0.4993 0.1312  0.2497  0.4423  0.1693  0.2110  0.2660  0.1960
+K12  0.4915  0.5484 0.2893  0.3909  0.4988  0.4622  0.5065  0.4720  0.3911
+K13  0.5631  0.1521 0.5150  0.3308  0.1510  0.3568  0.4738  0.4463  0.3773
+K14  0.3387 -0.1336 0.3922  0.0659 -0.0390  0.4195  0.2613  0.2367  0.2328
+K15  0.5230  0.1159 0.4635  0.2274  0.2404  0.5384  0.3622  0.4176  0.4375
+K16  0.4974  0.0706 0.4583  0.2405  0.1551  0.5147  0.3911  0.3871  0.4430
+K17  0.6190  0.1709 0.4314  0.1876  0.1976  0.4279  0.6064  0.5603  0.5150
+K18  0.5564  0.5052 0.5153  0.4455  0.4516  0.5196  0.4993  0.5450  0.4221
+K19  0.8427  0.2384 0.4685  0.3973  0.4014  0.5826  0.7811  0.7622  0.6726
+K20  0.7572  0.3178 0.4397  0.4235  0.4496  0.4998  0.7968  0.7221  0.6435
+K21  0.8616  0.2979 0.4301  0.3759  0.4657  0.4923  0.7597  0.7299  0.6827
+K22  0.7719  0.2838 0.3703  0.3976  0.4358  0.4462  0.7560  0.6876  0.6590
+K23  0.9874  0.4604 0.6118  0.4829  0.5247  0.9822  0.8467  0.8350  0.7492
+K24  0.9940  0.4251 0.5798  0.4731  0.5415  0.9799  0.8198  0.8935  0.8303
+K25  1.0000  0.3880 0.5452  0.4185  0.4819  0.9819  0.8526  0.9302  0.8649
+K26  0.3880  1.0000 0.7510  0.8161  0.8610  0.7547  0.6204  0.4617  0.4439
+K27  0.5452  0.7510 1.0000  0.9422  0.8105  0.9061  0.6619  0.5961  0.5142
+K28  0.4185  0.8161 0.9422  1.0000  0.8473  0.8067  0.5049  0.4987  0.4442
+K29  0.4819  0.8610 0.8105  0.8473  1.0000  0.9934  0.5788  0.4953  0.4478
+K30  0.9819  0.7547 0.9061  0.8067  0.9934  1.0000  0.9778  0.6337  0.4357
+K31  0.8526  0.6204 0.6619  0.5049  0.5788  0.9778  1.0000  0.9315  0.9110
+K32  0.9302  0.4617 0.5961  0.4987  0.4953  0.6337  0.9315  1.0000  0.9442
+K33  0.8649  0.4439 0.5142  0.4442  0.4478  0.4357  0.9110  0.9442  1.0000
+K34  0.6204  0.1729 0.5835  0.2970  0.3684  0.9725  0.4556  0.4561  0.4552
+K35 -0.0275  0.2978 0.2482  0.2884  0.2150  0.2367 -0.1074 -0.1248 -0.0046
+K36  0.7963  0.3979 0.9664  0.9738  0.4515  0.9486  0.7521  0.7654  0.7102
+K37  0.6441  0.2019 0.4175  0.3743  0.4277  0.9765  0.5750  0.5879  0.4907
+        K34     K35     K36     K37
+K1   0.2945  0.1579  0.4942  0.4216
+K2   0.0139  0.3472  0.0200  0.1460
+K4   0.1057  0.3808  0.2601  0.4299
+K6   0.1356  0.0978  0.1615  0.2200
+K9   0.0204  0.0207 -0.0184 -0.0166
+K11 -0.0879  0.0857  0.1176  0.0381
+K12  0.2019 -0.0236  0.2899  0.1515
+K13  0.3240  0.0055  0.4100  0.3825
+K14  0.3647  0.2754  0.4924  0.4505
+K15  0.4694  0.3522  0.4908  0.4197
+K16  0.6081  0.4340  0.3076  0.3194
+K17  0.6775  0.3313  0.7649  0.7716
+K18  0.5226  0.2831  0.4046  0.3363
+K19  0.5095  0.0972  0.4695  0.3868
+K20  0.4181  0.1223  0.6262  0.4733
+K21  0.4831  0.1789  0.6312  0.4809
+K22  0.3648  0.1218  0.6609  0.4061
+K23  0.5402  0.1216  0.7552  0.5697
+K24  0.5796  0.0933  0.7756  0.6570
+K25  0.6204 -0.0275  0.7963  0.6441
+K26  0.1729  0.2978  0.3979  0.2019
+K27  0.5835  0.2482  0.9664  0.4175
+K28  0.2970  0.2884  0.9738  0.3743
+K29  0.3684  0.2150  0.4515  0.4277
+K30  0.9725  0.2367  0.9486  0.9765
+K31  0.4556 -0.1074  0.7521  0.5750
+K32  0.4561 -0.1248  0.7654  0.5879
+K33  0.4552 -0.0046  0.7102  0.4907
+K34  1.0000  0.3054  0.8905  0.6951
+K35  0.3054  1.0000  0.1005  0.2406
+K36  0.8905  0.1005  1.0000  0.9998
+K37  0.6951  0.2406  0.9998  1.0000
+
+Alternative hypothesis: the second eigenvalue of the observed data is substantially larger 
+            than the second eigenvalue of data under the assumed IRT model
+
+Second eigenvalue in the observed data: 4.2472
+Average of second eigenvalues in Monte Carlo samples: 2.1639
+Monte Carlo samples: 100
+p-value: 0.0099</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb60"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a>mirt.data4 <span class="ot">=</span> <span class="fu">mirt</span>(data4, <span class="dv">1</span>, <span class="at">itemtype =</span> <span class="st">"2PL"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: EM cycles terminated after 500 iterations.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb62"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a><span class="fu">coef</span>(mirt.data4, <span class="at">IRTpars =</span> T, <span class="at">simplify =</span> T)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>$items
+         a      b g u
+K1   0.924 -1.738 0 1
+K2   0.382  1.389 0 1
+K4   0.563  1.174 0 1
+K6   0.917  2.144 0 1
+K9   0.395 -0.277 0 1
+K11  0.381  1.659 0 1
+K12  0.774  1.730 0 1
+K13  1.170 -1.530 0 1
+K14  0.931 -0.820 0 1
+K15  1.377  0.372 0 1
+K16  1.213  0.477 0 1
+K17  1.759 -1.406 0 1
+K18  1.485 -0.302 0 1
+K19  9.941 -0.082 0 1
+K20 10.957 -0.113 0 1
+K21 38.161 -0.157 0 1
+K22  9.079 -0.181 0 1
+K23  4.776 -0.438 0 1
+K24  6.044 -0.468 0 1
+K25  7.181 -0.509 0 1
+K26  1.047 -0.363 0 1
+K27  1.779  0.839 0 1
+K28  1.323  0.291 0 1
+K29  1.373 -0.059 0 1
+K30  2.106  1.201 0 1
+K31  3.688 -0.758 0 1
+K32  3.709 -0.505 0 1
+K33  2.326 -0.416 0 1
+K34  1.556 -1.435 0 1
+K35  0.387  0.687 0 1
+K36  2.887 -1.712 0 1
+K37  1.747 -1.448 0 1
+
+$means
+F1 
+ 0 
+
+$cov
+   F1
+F1  1</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="fitting-2pl-irt-model-with-mirt-package" class="level1">
+<h1>Fitting 2PL IRT Model with <code>mirt</code> Package</h1>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb64"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit 2PL Model (mirt)</span></span>
+<span id="cb64-2"><a href="#cb64-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb64-3"><a href="#cb64-3" aria-hidden="true" tabindex="-1"></a>mirt.data4 <span class="ot">&lt;-</span> <span class="fu">mirt</span>(data4, <span class="dv">1</span>, <span class="at">itemtype =</span> <span class="st">"2PL"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: EM cycles terminated after 500 iterations.</code></pre>
+</div>
+</div>
+<section id="item-parameter-estimates-mirt" class="level2">
+<h2 class="anchored" data-anchor-id="item-parameter-estimates-mirt">Item Parameter Estimates (mirt)</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb66"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Obtain difficulty (b), discrimination (a), guessing (g), upper bound (u)</span></span>
+<span id="cb66-2"><a href="#cb66-2" aria-hidden="true" tabindex="-1"></a>mirt_parms <span class="ot">&lt;-</span> <span class="fu">coef</span>(mirt.data4, <span class="at">IRTpars =</span> <span class="cn">TRUE</span>, <span class="at">simplify =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb66-3"><a href="#cb66-3" aria-hidden="true" tabindex="-1"></a>item_parms_refined_mirt <span class="ot">&lt;-</span> mirt_parms<span class="sc">$</span>items</span>
+<span id="cb66-4"><a href="#cb66-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb66-5"><a href="#cb66-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb66-6"><a href="#cb66-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Tidy view: Item | Discrimination | Difficulty | Guessing Parameter | Upper Bound</span></span>
+<span id="cb66-7"><a href="#cb66-7" aria-hidden="true" tabindex="-1"></a>item_parms_refined_tbl_mirt <span class="ot">&lt;-</span> item_parms_refined_mirt <span class="sc">|&gt;</span></span>
+<span id="cb66-8"><a href="#cb66-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.data.frame</span>() <span class="sc">|&gt;</span></span>
+<span id="cb66-9"><a href="#cb66-9" aria-hidden="true" tabindex="-1"></a>  (\(d) {</span>
+<span id="cb66-10"><a href="#cb66-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (<span class="sc">!</span><span class="st">"g"</span> <span class="sc">%in%</span> <span class="fu">names</span>(d)) d<span class="sc">$</span>g <span class="ot">&lt;-</span> <span class="cn">NA_real_</span></span>
+<span id="cb66-11"><a href="#cb66-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (<span class="sc">!</span><span class="st">"u"</span> <span class="sc">%in%</span> <span class="fu">names</span>(d)) d<span class="sc">$</span>u <span class="ot">&lt;-</span> <span class="cn">NA_real_</span></span>
+<span id="cb66-12"><a href="#cb66-12" aria-hidden="true" tabindex="-1"></a>    d</span>
+<span id="cb66-13"><a href="#cb66-13" aria-hidden="true" tabindex="-1"></a>  })() <span class="sc">|&gt;</span></span>
+<span id="cb66-14"><a href="#cb66-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">transform</span>(</span>
+<span id="cb66-15"><a href="#cb66-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">Item               =</span> <span class="fu">rownames</span>(item_parms_refined_mirt),</span>
+<span id="cb66-16"><a href="#cb66-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">Difficulty         =</span> b,</span>
+<span id="cb66-17"><a href="#cb66-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">Discrimination     =</span> a,</span>
+<span id="cb66-18"><a href="#cb66-18" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">Guessing Parameter</span><span class="st">`</span> <span class="ot">=</span> g,</span>
+<span id="cb66-19"><a href="#cb66-19" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">Upper Bound</span><span class="st">`</span>        <span class="ot">=</span> u</span>
+<span id="cb66-20"><a href="#cb66-20" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb66-21"><a href="#cb66-21" aria-hidden="true" tabindex="-1"></a>  (\(d) d[, <span class="fu">c</span>(<span class="st">"Item"</span>, <span class="st">"Difficulty"</span>, <span class="st">"Discrimination"</span>, <span class="st">"Guessing Parameter"</span>, <span class="st">"Upper Bound"</span>)])() <span class="sc">|&gt;</span></span>
+<span id="cb66-22"><a href="#cb66-22" aria-hidden="true" tabindex="-1"></a>  (\(d) <span class="fu">within</span>(d, {</span>
+<span id="cb66-23"><a href="#cb66-23" aria-hidden="true" tabindex="-1"></a>    Difficulty          <span class="ot">&lt;-</span> <span class="fu">round</span>(Difficulty, <span class="dv">3</span>)</span>
+<span id="cb66-24"><a href="#cb66-24" aria-hidden="true" tabindex="-1"></a>    Discrimination      <span class="ot">&lt;-</span> <span class="fu">round</span>(Discrimination, <span class="dv">3</span>)</span>
+<span id="cb66-25"><a href="#cb66-25" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">Guessing Parameter</span><span class="st">`</span><span class="ot">&lt;-</span> <span class="fu">round</span>(<span class="st">`</span><span class="at">Guessing Parameter</span><span class="st">`</span>, <span class="dv">3</span>)</span>
+<span id="cb66-26"><a href="#cb66-26" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">Upper Bound</span><span class="st">`</span>       <span class="ot">&lt;-</span> <span class="fu">round</span>(<span class="st">`</span><span class="at">Upper Bound</span><span class="st">`</span>, <span class="dv">3</span>)</span>
+<span id="cb66-27"><a href="#cb66-27" aria-hidden="true" tabindex="-1"></a>  }))()</span>
+<span id="cb66-28"><a href="#cb66-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb66-29"><a href="#cb66-29" aria-hidden="true" tabindex="-1"></a>item_parms_refined_tbl_mirt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>    Item Difficulty Discrimination Guessing Parameter Upper Bound
+K1    K1     -1.738          0.924                  0           1
+K2    K2      1.389          0.382                  0           1
+K4    K4      1.174          0.563                  0           1
+K6    K6      2.144          0.917                  0           1
+K9    K9     -0.277          0.395                  0           1
+K11  K11      1.659          0.381                  0           1
+K12  K12      1.730          0.774                  0           1
+K13  K13     -1.530          1.170                  0           1
+K14  K14     -0.820          0.931                  0           1
+K15  K15      0.372          1.377                  0           1
+K16  K16      0.477          1.213                  0           1
+K17  K17     -1.406          1.759                  0           1
+K18  K18     -0.302          1.485                  0           1
+K19  K19     -0.082          9.941                  0           1
+K20  K20     -0.113         10.957                  0           1
+K21  K21     -0.157         38.161                  0           1
+K22  K22     -0.181          9.079                  0           1
+K23  K23     -0.438          4.776                  0           1
+K24  K24     -0.468          6.044                  0           1
+K25  K25     -0.509          7.181                  0           1
+K26  K26     -0.363          1.047                  0           1
+K27  K27      0.839          1.779                  0           1
+K28  K28      0.291          1.323                  0           1
+K29  K29     -0.059          1.373                  0           1
+K30  K30      1.201          2.106                  0           1
+K31  K31     -0.758          3.688                  0           1
+K32  K32     -0.505          3.709                  0           1
+K33  K33     -0.416          2.326                  0           1
+K34  K34     -1.435          1.556                  0           1
+K35  K35      0.687          0.387                  0           1
+K36  K36     -1.712          2.887                  0           1
+K37  K37     -1.448          1.747                  0           1</code></pre>
+</div>
+</div>
+</section>
+<section id="test-information" class="level2">
+<h2 class="anchored" data-anchor-id="test-information">Test Information</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb68"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a><span class="fu">areainfo</span>(mirt.data4, <span class="fu">c</span>(<span class="sc">-</span><span class="dv">3</span>,<span class="dv">3</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> LowerBound UpperBound     Info TotalInfo Proportion nitems
+         -3          3 119.4532   122.337  0.9764275     32</code></pre>
+</div>
+</div>
+</section>
+<section id="graphical-presentation-1" class="level2">
+<h2 class="anchored" data-anchor-id="graphical-presentation-1">Graphical Presentation</h2>
+<section id="item-trace-lines-item-characteristic-curves" class="level3">
+<h3 class="anchored" data-anchor-id="item-trace-lines-item-characteristic-curves">Item Trace Lines (Item Characteristic Curves)</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb70"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb70-1"><a href="#cb70-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(mirt.data4, <span class="at">type =</span> <span class="st">"trace"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="IRT-V3_files/figure-html/unnamed-chunk-26-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="item-information-curves" class="level3">
+<h3 class="anchored" data-anchor-id="item-information-curves">Item Information Curves</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb71"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(mirt.data4, <span class="at">type =</span> <span class="st">"infotrace"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="IRT-V3_files/figure-html/unnamed-chunk-27-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="test-information-function" class="level3">
+<h3 class="anchored" data-anchor-id="test-information-function">Test Information Function</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb72"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb72-1"><a href="#cb72-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(mirt.data4, <span class="at">type =</span> <span class="st">"info"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="IRT-V3_files/figure-html/unnamed-chunk-28-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="test-information-and-standard-error" class="level3">
+<h3 class="anchored" data-anchor-id="test-information-and-standard-error">Test Information and Standard Error</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb73"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(mirt.data4, <span class="at">type =</span> <span class="st">"infoSE"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="IRT-V3_files/figure-html/unnamed-chunk-29-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="expected-total-score" class="level3">
+<h3 class="anchored" data-anchor-id="expected-total-score">Expected Total Score</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb74"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb74-1"><a href="#cb74-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(mirt.data4)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="IRT-V3_files/figure-html/unnamed-chunk-30-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="goodness-of-fit-tests-1" class="level2">
+<h2 class="anchored" data-anchor-id="goodness-of-fit-tests-1">Goodness-of-Fit Tests</h2>
+<section id="overall-model-fit" class="level3">
+<h3 class="anchored" data-anchor-id="overall-model-fit">Overall Model Fit</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb75"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb75-1"><a href="#cb75-1" aria-hidden="true" tabindex="-1"></a><span class="fu">M2</span>(mirt.data4)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>            M2  df p     RMSEA   RMSEA_5  RMSEA_95     SRMSR       TLI
+stats 1794.403 464 0 0.1276369 0.1210857 0.1335246 0.1204001 0.8066621
+            CFI
+stats 0.8191355</code></pre>
+</div>
+</div>
+</section>
+<section id="item-fit-statistics-1" class="level3">
+<h3 class="anchored" data-anchor-id="item-fit-statistics-1">Item Fit Statistics</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb77"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a><span class="fu">itemfit</span>(mirt.data4)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   item   S_X2 df.S_X2 RMSEA.S_X2 p.S_X2
+1    K1 15.411      17      0.000  0.566
+2    K2 20.729      20      0.014  0.413
+3    K4 11.803      19      0.000  0.894
+4    K6 11.969      12      0.000  0.448
+5    K9 26.708      20      0.044  0.144
+6   K11 17.429      19      0.000  0.561
+7   K12  9.395      15      0.000  0.856
+8   K13 14.284      15      0.000  0.504
+9   K14 17.920      18      0.000  0.461
+10  K15 10.975      16      0.000  0.811
+11  K16 10.418      17      0.000  0.885
+12  K17  8.703      10      0.000  0.560
+13  K18 10.454      15      0.000  0.790
+14  K19 26.399       4      0.178  0.000
+15  K20 29.446       4      0.190  0.000
+16  K21 34.364       3      0.244  0.000
+17  K22 38.667       5      0.196  0.000
+18  K23  8.355       8      0.016  0.400
+19  K24  9.052       7      0.041  0.249
+20  K25 11.335       5      0.085  0.045
+21  K26 16.393      17      0.000  0.496
+22  K27 14.619      12      0.035  0.263
+23  K28  9.783      16      0.000  0.878
+24  K29 16.725      15      0.026  0.336
+25  K30  5.568       7      0.000  0.591
+26  K31  8.993       7      0.040  0.253
+27  K32 20.721       9      0.086  0.014
+28  K33 33.956      13      0.096  0.001
+29  K34 30.185      12      0.093  0.003
+30  K35 16.783      20      0.000  0.667
+31  K36  5.141       2      0.094  0.077
+32  K37 10.679      10      0.020  0.383</code></pre>
+</div>
+</div>
+</section>
+<section id="person-fit-statistics-1" class="level3">
+<h3 class="anchored" data-anchor-id="person-fit-statistics-1">Person Fit Statistics</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb79"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb79-1"><a href="#cb79-1" aria-hidden="true" tabindex="-1"></a><span class="fu">personfit</span>(mirt.data4)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>         outfit    z.outfit     infit      z.infit          Zh
+1    0.62497116 -0.63232947 0.7459764 -1.330025670  1.23404511
+2    0.62497116 -0.63232947 0.7459764 -1.330025670  1.23404511
+3    0.46798287 -0.45085291 0.9100477 -0.353170294  0.46833810
+4    0.69461420 -0.51896915 0.8336436 -0.815191460  0.86212539
+5    4.01156253  2.56425735 0.8631400 -0.622080128 -0.32131522
+6    0.56988264 -0.19838795 0.9883664  0.016720104  0.12756880
+7    0.46490837 -0.30822991 0.7983753 -0.913346897  0.91834262
+8    0.27239280 -0.83766123 0.6663777 -1.278647771  1.09523280
+9    0.91851967  0.06441897 1.0352887  0.230519481 -0.14376742
+10   0.89668121 -0.06034273 0.9265575 -0.309264769  0.32682800
+11   0.43950365 -1.39700469 0.5940018 -2.588903148  2.04667242
+12   0.86470361  0.16321494 1.1104551  0.552583413 -0.37667237
+13   0.47860307 -0.12726260 0.8668458 -0.577004231  0.68768210
+14   0.41185095 -0.47396327 0.7023614 -1.494791024  1.18302356
+15   1.16652007  0.47788382 1.3081896  1.465836062 -1.24577311
+16   0.48722333 -0.15257515 0.8852905 -0.485472906  0.61677144
+17   0.67382017 -0.69943983 0.8151254 -0.954317634  0.94841898
+18   4.42984084  2.26553898 0.9862029  0.006367458 -1.05727740
+19   1.22522304  0.53267684 1.0534610  0.317006836 -0.41340332
+20   1.06468445  0.33903624 1.2102779  0.944969414 -0.74445231
+21   0.67920900 -0.37637492 0.7951501 -0.901383769  0.81049530
+22   1.47207815  0.74372864 1.2785129  1.237922894 -1.38029819
+23   0.51536987 -0.23781889 0.8963987 -0.413009202  0.61117349
+24   1.01337581  0.21346395 1.3018287  1.244802346 -1.07530238
+25   0.49756279 -0.91846216 0.6402171 -2.030139046  1.75186034
+26   1.22988907  0.55279116 0.8848716 -0.472042841  0.10878846
+27   1.30264079  0.81241884 1.4782589  2.297388017 -2.15639563
+28   0.20155880 -0.88429464 0.6257350 -1.218538404  0.99957733
+29   0.31161350 -0.86316928 0.6495278 -1.712123856  1.36128532
+30   1.15679479  0.47385752 1.1369490  0.721230864 -0.67563916
+31   0.41763701 -0.46367083 0.7173682 -1.339089680  1.20670023
+32   0.57764032 -0.60856114 0.7290954 -1.438481008  1.35242336
+33   2.15809470  2.24965306 1.4263467  2.099925045 -2.62401357
+34   0.51030869 -0.30673235 0.9110976 -0.359835117  0.46603565
+35   0.14628763 -1.16698391 0.4678149 -1.883478883  1.27082459
+36   1.04779938  0.35108633 1.1860893  0.879024786 -0.94854052
+37   0.50248300 -0.09586486 0.9145964 -0.337153887  0.52879648
+38   0.44081790 -0.37406056 0.8102187 -0.391856748  0.43792313
+39   0.37444930 -0.49585790 0.7277203 -1.342416724  1.16517298
+40   0.93245344  0.20656214 1.0041426  0.093293219 -0.04915660
+41   1.15313509  0.44254688 1.0626560  0.348337605 -0.41381487
+42   0.32008754 -0.38037101 0.5841452 -2.221748739  1.66450148
+43   0.56565960 -0.12191457 0.9981880  0.064480735  0.25864192
+44   0.14628763 -1.16698391 0.4678149 -1.883478883  1.27082459
+45   0.81794992 -0.11809826 1.0098765  0.119846299 -0.03440971
+46   0.14628763 -1.16698391 0.4678149 -1.883478883  1.27082459
+47   0.54618342 -0.43252346 1.1231598  0.566742074 -0.26345489
+48   1.43968533  0.73884167 1.4038317  1.672265859 -1.64842882
+49   0.29493312 -0.96834097 0.6748538 -1.367647449  1.15678048
+50   0.30719408 -0.78457002 0.6509488 -1.420169489  1.22008056
+51   0.38285130 -0.50650964 0.7024308 -1.493137205  1.24171251
+52   0.23524622 -0.73294469 0.6478506 -1.245020657  1.07132172
+53   0.28004670 -1.01433759 0.5947005 -2.001348522  1.51658230
+54   0.62183892 -0.89058638 0.6833679 -1.716295531  1.44379495
+55   0.66983538 -0.65174056 0.7530974 -1.320174598  1.15712397
+56   1.16564576  0.48423600 1.5242410  2.197318182 -2.14192702
+57   0.72391944  0.14480159 1.1922688  0.909485571 -0.51563385
+58   1.16801741  0.47125656 1.2883790  1.251104665 -1.12133843
+59   1.01875798  0.18789447 1.0014867  0.071587484 -0.04624131
+60   0.74745878  0.18084215 1.0784976  0.427196290 -0.26699524
+61   1.21429225  0.52204802 1.2124498  0.949513754 -0.89120724
+62   0.29088513 -0.91701352 0.6837747 -1.271112813  1.09920146
+63   0.61350528 -0.95129808 0.7875511 -1.078484605  1.13312923
+64   0.44191810 -0.17725577 0.7710007 -1.086844689  0.98679511
+65   1.29169422  0.66049562 0.9004924 -0.355191154 -0.02895790
+66   0.93884181  0.20000212 1.1792956  0.933477267 -0.70940826
+67   0.35100984 -0.82370151 0.7525084 -1.105215654  1.00946189
+68   0.21417010 -0.87938689 0.5465428 -1.810456665  1.36958930
+69   0.34781785 -0.69492697 0.7314127 -1.027811895  0.98644352
+70   1.45881278  1.11444362 1.0632149  0.375803351 -0.58692705
+71   0.68223486 -0.06964114 1.0151905  0.142109927  0.10545399
+72   0.31397294 -0.64499282 0.8068097 -0.628952391  0.71441586
+73   0.90903965  0.16349154 0.9614404 -0.064221195 -0.18798846
+74   0.31403191 -0.65138711 0.5985898 -2.143784243  1.61578723
+75   1.13275637  0.47395570 0.9601606 -0.111676784 -0.09414312
+76   0.85121022  0.15408265 1.2314619  0.942142940 -0.76697437
+77   0.74243361 -0.49876268 0.8146191 -0.921531107  0.87327619
+78   1.10538192  0.41481107 1.5063457  2.103443357 -2.08250227
+79   0.48427112 -0.30346168 0.8347691 -0.716715917  0.81613155
+80   0.46988206 -0.32445764 0.7991245 -0.941975423  0.80757785
+81  10.40306572  4.99818805 0.9534499 -0.155474858 -1.40016727
+82   0.59854809 -0.55782056 0.8098266 -0.801937517  0.81165495
+83   0.53720415 -0.46046914 0.7388989 -1.326104980  1.26493154
+84   1.23416556  0.63669754 1.3252703  1.688972889 -1.55341943
+85   1.43193924  1.07314304 1.0407634  0.267571647 -0.48351741
+86   2.46205770  1.58413362 0.9064243 -0.304962282 -0.54526689
+87   0.39133287 -0.71417458 0.8049140 -0.841538466  0.81110906
+88   0.49557958 -0.25414817 0.8807127 -0.511511962  0.59778651
+89   0.66350431 -0.53831541 0.8489232 -0.742475445  0.85495152
+90   0.85296668  0.03910601 1.0755630  0.403356931 -0.24649496
+91   0.55322609 -0.03174959 0.9665330 -0.085762892  0.30649216
+92   1.35969264  0.67107935 1.3097190  1.297303690 -1.58726939
+93   1.05055770  0.25786365 1.0211140  0.175152979 -0.18135669
+94   1.32645503  0.73281451 1.1166248  0.623237573 -0.78727738
+95   1.04280430  0.37306471 1.2704607  1.240611762 -1.23366873
+96   0.99255316  0.34656895 1.0531934  0.311858747 -0.33231189
+97   0.08955636 -1.44084518 0.2200957 -2.309426394  1.45413396
+98   0.68539417 -0.16870660 0.9180206 -0.298211252  0.38196166
+99   1.29186590  0.60077730 1.1368948  0.664851618 -0.80256988
+100  0.57166550 -0.76338416 0.7416350 -1.375961276  1.32762769
+101  1.59125633  0.98020259 0.7566462 -1.365822320  0.59979613
+102  1.92232166  1.34930556 1.2096657  0.940821094 -1.27398574
+103  1.98585762  2.03001244 1.4578499  2.184258224 -2.64870131
+104  1.37336546  0.73282575 1.1065819  0.546959762 -0.67759198
+105  0.48551967 -0.55572857 0.9813585  0.001359031  0.17490342
+106  0.98558820  0.17066630 1.3001514  1.207681456 -1.00918799
+107  0.42793553 -0.88914505 0.7134251 -1.212684144  1.15698829
+108  0.47435266 -0.30156989 0.8186170 -0.803717918  0.86133060
+109  0.71071971 -0.04546509 1.3346668  1.071110558 -0.78883891
+110  0.65813715 -0.73230829 0.8612836 -0.742030099  0.81811073
+111  0.60972619 -0.62491978 0.8448563 -0.606584563  0.65525807
+112  1.72444392  1.64129763 1.3522055  1.676479352 -1.93783083
+113  0.81188751 -0.35960805 0.9082041 -0.440774338  0.43598442
+114  0.39462815 -0.52255200 0.7533444 -0.990527772  0.95228694
+115  0.63469231 -0.88477478 0.8036905 -1.038140732  1.03940250
+116  0.47029657 -0.97022719 0.6946325 -1.376036164  1.26325935
+117  0.73052460 -0.17727844 0.9137388 -0.318389769  0.37706508
+118  0.75544263 -0.12272436 0.9438289 -0.179437396  0.27965603
+119  0.39139752 -0.40926287 0.6938607 -1.498951055  1.28581505
+120  0.75455250 -0.51192396 0.9510482 -0.206809992  0.37785577
+121  0.58697336  0.00822753 0.8302401 -0.766212847  0.63250176
+122  0.43225939 -0.30243649 0.7687783 -1.082252080  1.03201371
+123  1.17243389  0.46718520 1.2219141  0.986136421 -0.94360802
+124  0.31708859 -0.94649832 0.6957671 -1.373051260  1.17286773
+125  0.54060488 -0.19692611 0.9035990 -0.379102341  0.54446418
+126  0.78025681 -0.08999346 1.0597736  0.319312820 -0.18333603
+127  3.15548278  3.47382205 1.1942780  0.979065910 -1.72087985
+128  0.40033639 -0.54463313 0.7892779 -0.985708135  0.92963449
+129  1.54444709  0.79195138 1.3851008  1.651633127 -1.81630039
+130  1.50268745  0.78514790 1.2300300  1.059191638 -1.53960119
+131  0.47495308 -0.65664341 0.6784339 -1.542724392  1.40213937
+132  1.00896568  0.16414809 1.1035860  0.566536942 -0.41115148
+133  0.74597362 -0.03036495 1.3815378  1.288449622 -0.95911353
+134  2.02982248  1.72850619 1.8236486  3.446680864 -4.11684808
+135  0.36471267 -0.56010974 0.6976811 -1.522625439  1.27358338
+136  0.91190256  0.02939897 1.3597735  1.444999564 -1.08453959
+137  0.62485800 -0.36828180 0.8742422 -0.535687570  0.68292915
+138  0.50144976 -0.59404572 0.7685579 -1.032907797  1.01339863
+139  1.12235777  0.39661497 1.1518320  0.792985863 -0.73580502
+140  0.41193665 -0.30523653 0.7076289 -1.429503895  1.20890542
+141  0.31441348 -0.67482984 0.5911075 -1.854543205  1.50264520
+142  0.71490020 -0.32187990 0.9892895  0.037633388  0.10644174
+143  1.61510303  1.44423461 1.2724620  1.342413030 -1.53307154
+144  0.60947815 -0.51095694 0.7656923 -1.319497846  1.17503056
+145  0.77699174 -0.34586605 0.8872330 -0.533711935  0.56692306
+146  1.76064996  1.50520216 1.3750977  1.781135706 -2.00225950
+147  0.17897500 -0.88678776 0.5169135 -1.775729529  1.29216307
+148  0.63498311 -0.89640738 0.7808466 -1.207269317  1.11153420
+149  0.64902926  0.07793040 0.9144681 -0.337790909  0.30882772
+150  0.35731719 -1.00800103 0.6097003 -1.762070887  1.49406132
+151  1.33029035  0.63437911 1.1605410  0.767832991 -0.89523596
+152  0.21417010 -0.87938689 0.5465428 -1.810456665  1.36958930
+153  0.39201461 -0.94723164 0.5792721 -2.118643915  1.77194915
+154  0.14628763 -1.16698391 0.4678149 -1.883478883  1.27082459
+155  1.43986221  0.94577140 1.2446477  1.206166161 -1.32986051
+156  5.41663126  5.40093359 1.7981186  3.469352307 -5.42623736
+157  0.50248300 -0.09586486 0.9145964 -0.337153887  0.52879648
+158  1.29999159  0.81731666 1.2755210  1.334047948 -1.30372782
+159  0.69416255 -0.03025128 1.3238839  0.997530240 -0.73108683
+160  0.62549126 -0.09828113 0.9214269 -0.290050771  0.40424582
+161  0.33867248 -0.62941551 0.6559754 -1.494254179  1.29764881
+162  0.45020385 -0.48392575 0.9073183 -0.364191700  0.50528443
+163  1.44697564  0.74140425 1.0682953  0.327450971 -0.81121333
+164  1.22776749  0.54466432 1.4166251  1.737385179 -1.55163508
+165  0.46394511 -0.20124769 0.8074239 -0.878560487  0.87598456
+166  1.36723165  0.90903200 0.9241413 -0.321446428 -0.01451769
+167  0.47021322 -0.99246896 0.7307927 -1.174435145  1.15952203
+168  0.35033652 -0.60088631 0.6669237 -1.709584431  1.38419932
+169  0.68265720 -0.54826540 0.8211158 -0.905422618  0.91322745
+170  1.79099202  0.98841593 0.8125906 -0.446411482 -0.10563399
+171  0.88484366 -0.15024355 0.8946778 -0.505865030  0.38919773
+172  0.72831975 -0.12926729 0.9893498  0.028331467  0.15843229
+173  1.91393238  1.51499872 1.1169025  0.622897764 -1.12336126
+174  0.63416768 -0.74056992 0.7394587 -1.403296903  1.24479788
+175  0.80054388  0.13315827 1.1399226  0.680205902 -0.42088474
+176  0.98152760  0.27747802 1.1217664  0.597813343 -0.46091983
+177  0.53824459 -0.75770581 0.6971966 -1.636968742  1.51344767</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="reliability-estimates" class="level2">
+<h2 class="anchored" data-anchor-id="reliability-estimates">Reliability Estimates</h2>
+<section id="marginal-reliability" class="level3">
+<h3 class="anchored" data-anchor-id="marginal-reliability">Marginal Reliability</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb81"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb81-1"><a href="#cb81-1" aria-hidden="true" tabindex="-1"></a><span class="fu">marginal_rxx</span>(mirt.data4)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.9013384</code></pre>
+</div>
+</div>
+</section>
+<section id="empirical-reliability" class="level3">
+<h3 class="anchored" data-anchor-id="empirical-reliability">Empirical Reliability</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb83"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb83-1"><a href="#cb83-1" aria-hidden="true" tabindex="-1"></a>theta_se <span class="ot">=</span> <span class="fu">fscores</span>(mirt.data4, <span class="at">full.scores.SE =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb83-2"><a href="#cb83-2" aria-hidden="true" tabindex="-1"></a><span class="fu">empirical_rxx</span>(theta_se)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>       F1 
+0.9149253 </code></pre>
+</div>
+</div>
+</section>
+</section>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+        const codeEl = trigger.previousElementSibling.cloneNode(true);
+        for (const childEl of codeEl.children) {
+          if (isCodeAnnotation(childEl)) {
+            childEl.remove();
+          }
+        }
+        return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
