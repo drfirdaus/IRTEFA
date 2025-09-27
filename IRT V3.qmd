@@ -26,7 +26,7 @@ library(readxl)       # For reading data from Excel files
 ## Load Data
 
 ```{r}
-data1=read_xlsx("IRT_knowledge.xlsx") ##read data from Excel 
+data1=read_xlsx("IRT_knowledge_V1.xlsx") ##read data from Excel 
 names(data1) # List down variables in the data set
 dim(data1)  # Data set consists of 37 variables and 177 parents
 ```
