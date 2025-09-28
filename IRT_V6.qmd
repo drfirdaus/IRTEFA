@@ -1,7 +1,7 @@
 ---
 title: "IRT"
 author: "firdaus"
-format: html
+format: docx
 editor: visual
 ---
 
@@ -145,13 +145,31 @@ K10 - a = 0.30
 
 K11 - a = 0.35
 
+K24 - a = 16.9641 (?Overfitting)
+
 K35 - a = 0.31
+
+**Based on Local Dependence**
+
+K4 : K4–K6 (LD 16.3; Q3 0.295)
+
+K15 : K15–K16 (Q3 = 0.800; LD = 70.6)
+
+K27 : K26–K27–K28–K29 (multiple LD \> 14; Q3 up to 0.556)
+
+K34 : K34–K36–K37 (LD ≈ 12–13; Q3 ≈ 0.35–0.39)
+
+**Based on Item Fit**
+
+K19 : p =0.000
+
+K22 : p = 0.000
 
 ### 2PL Model - Remove Items
 
 ```{r}
 # Remove the items
-irt_removed_items <- c("K2", "K3", "K5", "K7", "K8", "K9", "K10", "K11","K35")
+irt_removed_items <- c("K2", "K3", "K5", "K7", "K8", "K9", "K10", "K11","K35","K24","K19","K22")
 
 # Create new dataset with only included items
 data4 <- data3 %>% dplyr::select(-any_of(irt_removed_items))
@@ -243,19 +261,144 @@ person_fit <- person.fit(irt.data4)
 person_fit
 ```
 
+# Checking Assumptions
+
 ## Unidimensionality
 
 ```{r}
 set.seed(2025)
-unidimTest(irt.data4)
+unidimTest(irt.data4) #Take A long time, insert # if want to skip and avoid long time
 ```
+
+### Checking Dominant Factor (Essential Unidimensionality)
+
+```{r}
+# Extract the response data from the fitted model
+irt_mat <- as.matrix(irt.data4$X)
+
+# Parallel analysis
+library(psych)
+fa.parallel(irt_mat, fa="fa")
+
+# Eigenvalues
+ev <- eigen(cor(irt_mat, use = "pairwise.complete.obs"))$values
+
+# First and second eigenvalues
+first_ev <- ev[1]
+second_ev <- ev[2]
+
+# Ratio
+dominance_ratio <- first_ev / second_ev
+
+# Print
+first_ev
+second_ev
+dominance_ratio
+
+```
+
+Parallel analysis suggested up to seven factors, as seven eigenvalues from the actual data exceeded those from randomly simulated data. However, the scree plot demonstrated a sharp drop between the first (9.02) and second (2.51) eigenvalues, yielding a ratio of 3.59. This indicates a single dominant factor underlying item responses, with additional weaker factors. Consistent with the concept of **essential unidimensionality** (Reckase, 1979; Hambleton, Swaminathan, & Rogers, 1991; Embretson & Reise, 2000), the scale was considered suitable for unidimensional IRT modeling despite the presence of minor secondary dimensions.
+
+```{r}
+class(irt.data4)
+str(irt.data4, max.level = 1)
+
+```
+
+## Local Independence
+
+### Yen’s Q3 residual cYen’s Q3 residual correlationsorrelations
+
+```{r}
+# ==========================================
+# Load required package
+# ==========================================
+library(mirt)
+library(mokken)
+
+# Extract the raw item response matrix from the ltm object
+irt_mat <- as.data.frame(irt.data4$X)   # now it's a dataframe
+irt_mat <- as.matrix(irt_mat)           # convert to numeric matrix
+
+
+
+# ==========================================
+# 1. Fit a unidimensional 2PL model
+# ==========================================
+
+mod2pl <- mirt(irt_mat, 1, itemtype = "2PL")
+mod1pl <- mirt(irt_mat, 1, itemtype = "Rasch")
+
+# ==========================================
+# 2. Assumption: Local Independence
+# ==========================================
+# (a) Yen’s Q3 residual correlations
+# Q3_resid <- resid(mod2pl, type = "Q3")
+# Assumption 2: Local Independence
+Q3_resid <- residuals(mod2pl, type = "Q3")
+
+Q3_resid   # inspect residual correlations (Q3 > .20 may indicate local dependence)
+
+# Chen & Thissen’s LD χ² statistic
+LD_resid <- residuals(mod2pl, type = "LD")
+LD_resid  # values > 10 indicate local dependence
+```
+
+## Monotonicity
+
+```{r}
+# ==========================================
+# 3. Assumption: Monotonicity
+# ==========================================
+
+# (a) Plot Item Characteristic Curves (ICCs) to visually check monotonicity
+plot(mod2pl, type = "trace")   # S-shaped, increasing curves are expected
+
+# (b) Optional: Use Mokken scale analysis for monotonicity check
+
+# Run monotonicity check
+check.monotonicity(irt_mat)  # flags items with non-monotonic patterns
+```
+
+## Model Fitness
+
+### Global fit statistics
+
+```{r}
+# ==========================================
+# 4. Assumption: Model Fit
+# ==========================================
+# (a) Global fit statistics (M2, RMSEA, SRMSR)
+M2(mod2pl)   # RMSEA < 0.08 and SRMSR < 0.05 = good fit
+```
+
+### Item-level fit
+
+```{r}
+# (b) Item-level fit (S-X² or G² statistics)
+itemfit_stats <- itemfit(mod2pl)
+itemfit_stats  # significant misfit items should be reviewed
+```
+
+### Compare 1PL vs 2PL with likelihood ratio test
+
+```{r}
+# (c) Compare 1PL vs 2PL with likelihood ratio test
+# Fit 1PL and 2PL models
+mod1pl <- mirt(irt_mat, 1, itemtype = "Rasch")
+mod2pl <- mirt(irt_mat, 1, itemtype = "2PL")
+
+# Likelihood ratio test: does 2PL fit better than Rasch?
+anova(mod1pl, mod2pl)
+
+```
+
+# Fitting 2PL IRT Model with `mirt` Package
 
 ```{r}
 mirt.data4 = mirt(data4, 1, itemtype = "2PL")
 coef(mirt.data4, IRTpars = T, simplify = T)
 ```
-
-# Fitting 2PL IRT Model with `mirt` Package
 
 ```{r}
 # Fit 2PL Model (mirt)

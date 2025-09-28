@@ -1,7 +1,7 @@
 ---
 title: "IRT"
 author: "firdaus"
-format: html
+format: docx
 editor: visual
 ---
 
@@ -247,15 +247,44 @@ person_fit
 
 ```{r}
 set.seed(2025)
-unidimTest(irt.data4)
+unidimTest(irt.data4) #Take A long time, insert # if want to skip and avoid long time
 ```
+
+### Checking Dominant Factor (Essential Unidimensionality)
+
+```{r}
+# Extract the response data from the fitted model
+irt_mat <- as.matrix(irt.data4$X)
+
+# Parallel analysis
+library(psych)
+fa.parallel(irt_mat, fa="fa")
+
+# Eigenvalues
+ev <- eigen(cor(irt_mat, use = "pairwise.complete.obs"))$values
+
+# First and second eigenvalues
+first_ev <- ev[1]
+second_ev <- ev[2]
+
+# Ratio
+dominance_ratio <- first_ev / second_ev
+
+# Print
+first_ev
+second_ev
+dominance_ratio
+
+```
+
+Parallel analysis suggested up to seven factors, as seven eigenvalues from the actual data exceeded those from randomly simulated data. However, the scree plot demonstrated a sharp drop between the first (9.02) and second (2.51) eigenvalues, yielding a ratio of 3.59. This indicates a single dominant factor underlying item responses, with additional weaker factors. Consistent with the concept of **essential unidimensionality** (Reckase, 1979; Hambleton, Swaminathan, & Rogers, 1991; Embretson & Reise, 2000), the scale was considered suitable for unidimensional IRT modeling despite the presence of minor secondary dimensions.
+
+# Fitting 2PL IRT Model with `mirt` Package
 
 ```{r}
 mirt.data4 = mirt(data4, 1, itemtype = "2PL")
 coef(mirt.data4, IRTpars = T, simplify = T)
 ```
-
-# Fitting 2PL IRT Model with `mirt` Package
 
 ```{r}
 # Fit 2PL Model (mirt)

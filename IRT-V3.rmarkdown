@@ -2,6 +2,7 @@
 title: "IRT"
 author: "firdaus"
 format: html
+theme: united
 editor: visual
 ---
 
@@ -369,3 +370,4 @@ marginal_rxx(mirt.data4)
 theta_se = fscores(mirt.data4, full.scores.SE = TRUE)
 empirical_rxx(theta_se)
 ```
+
